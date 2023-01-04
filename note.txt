@@ -1,10 +1,12 @@
 类
-	
+
 	ctor: 构造函数
 	dtor: 析构函数
+
+	classname(): 临时对象
 	
-	classname() : 临时对象
 	类中能加const则要加const
+	
 	类的构造函数要使用初始化列表
 	
 	如果类中有指针则必须要带有：
@@ -14,6 +16,7 @@
 	
 	如果类中有指针，默认的拷贝构造函数是浅拷贝，
 	会造成内存泄露和指针指向同一位置
+	
 	拷贝赋值的重载
 		需要检测自我赋值
 			好处：
@@ -25,21 +28,45 @@
 					if( this == &a)
 						return *this;
 				
-			/*1*/	delete[] this->data;
-			/*2*/	this->data = new Type[ a->size()];
-			/*3*/	Copy( this->data, a->data);
+					/*1*/delete[] this->data;				
+					/*2*/this->data = new Type[ a->size()];	
+					/*3*/Copy( this->data, a->data);			
 					return *this;
 				}
-	
+		因为可能连续赋值, 所以返回类型不能为void
+		
 	new时先分配memory, 再调用构造函数
 	delete时先调用析构函数, 再释放memory
+
+	如果new了带有指针的类的数组，
+	delete时没有[], 则只会唤起一次dtor
+	使用[]后编译器会知道要调用多少次dtor
+	(在cookie后4字节会说明动态分配了多少内存)
+	如果类中不带指针, 则delete时不使用[]也不会
+	造成内存泄露
 	
+	classname c1;
+	c1.memberFunction();	
+		//等价于：classname::memberFunction( &c1);
+		//c1相当于this指针, 如果函数为static函数则没有这一步
+	
+	static成员函数没有this指针, 只能处理static数据
+	
+	调用static函数可以用object调用, 
+	也可以通过classname调用
+	
+	static数据要在类外做一次定义(给不给初值都可以),
+	类内只是声明
 	
 函数
 
 	函数参数用reference传递	函数返回值为函数中创造的
 	本地变量、本地对象，则不能return by reference
 	
+	成员函数
+		每一个成员函数都默认带一个隐藏的this参数
+		(可能是第一个参数也可能是最后一个)
+		
 reference(实质上就是指针)
 
 	使用reference传递参数，传递者无需知道接收者是
@@ -57,11 +84,6 @@ reference(实质上就是指针)
 			function( t);	//使用value作为参数传递，不报错
 	两个例子不报错的原因都是因为: 传递者(使用者)无需关注
 	参数是否以reference的形式实现传递
-	
-成员函数
-
-	每一个成员函数都默认带一个隐藏的this参数(可能是
-	第一个参数也可能是最后一个)
 	
 操作符重载
 	
