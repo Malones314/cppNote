@@ -41,6 +41,7 @@
 	本地变量、本地对象，则不能return by reference
 	
 reference(实质上就是指针)
+
 	使用reference传递参数，传递者无需知道接收者是
 	以reference形式接受
 		eg1:
@@ -58,6 +59,7 @@ reference(实质上就是指针)
 	参数是否以reference的形式实现传递
 	
 成员函数
+
 	每一个成员函数都默认带一个隐藏的this参数(可能是
 	第一个参数也可能是最后一个)
 	
