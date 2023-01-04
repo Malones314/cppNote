@@ -1,0 +1,134 @@
+类
+	
+	ctor: 构造函数
+	dtor: 析构函数
+	
+	classname() : 临时对象
+	类中能加const则要加const
+	类的构造函数要使用初始化列表
+	
+	如果类中有指针则必须要带有：
+	classname( classname& a): 拷贝构造函数
+	classname& operator=( classname& a):重载赋值操作符
+	这两个函数和析构函数被称为Big Three
+	
+	如果类中有指针，默认的拷贝构造函数是浅拷贝，
+	会造成内存泄露和指针指向同一位置
+	拷贝赋值的重载
+		需要检测自我赋值
+			好处：
+				1.速度快, 效率高, 防止不必要的动作
+				2.防止a=a的出错, 下例的1 2 3行如果没有自我
+				  赋值检测则a=a会出错
+			eg:
+				classname& operator=( classname& a){
+					if( this == &a)
+						return *this;
+				
+			/*1*/	delete[] this->data;
+			/*2*/	this->data = new Type[ a->size()];
+			/*3*/	Copy( this->data, a->data);
+					return *this;
+				}
+	
+	new时先分配memory, 再调用构造函数
+	delete时先调用析构函数, 再释放memory
+	
+	
+函数
+
+	函数参数用reference传递	函数返回值为函数中创造的
+	本地变量、本地对象，则不能return by reference
+	
+reference(实质上就是指针)
+	使用reference传递参数，传递者无需知道接收者是
+	以reference形式接受
+		eg1:
+			Type& function( Type* t ){
+				.....
+				return *t;	//返回指针指向的内容，不报错
+			}
+		eg2:
+			void function( Type&t ){
+				.....
+			}
+			Type t;
+			function( t);	//使用value作为参数传递，不报错
+	两个例子不报错的原因都是因为: 传递者(使用者)无需关注
+	参数是否以reference的形式实现传递
+	
+成员函数
+	每一个成员函数都默认带一个隐藏的this参数(可能是
+	第一个参数也可能是最后一个)
+	
+操作符重载
+	
+	带有=的重载考虑对象被连续赋值，
+	要reference
+	
+	对于<<等特殊操作符只能重载为非成员函数
+		eg:
+			ostream& operator << ( ostream& os, const Type& t){
+				return os << .....;
+			}
+	
+	对于自增自减操作符重载
+		成员函数的写法：
+		//前置 ++
+			classname & classname::operator++(){
+				n ++;
+				return * this;
+			}
+		//后置 ++
+			classname classname::operator++( int k){ 
+				classname tmp( *this);//记录修改前的对象
+				n++;
+				return tmp; //返回修改前的对象
+			}
+		非成员函数写法：
+		//前置--
+			classname& classname--( classname& d){
+				d.n--;
+				return d;    
+			}
+		//后置--
+			classname classname--( classname& d,int){
+				classname tmp(d);
+				d.n --;
+				return tmp;
+			}
+
+杂记
+	heap，或叫system heap, 是操作系统
+	提供的一块global内存空间，程序可
+	动态分配从中获得若干blocks。从heap
+	中获得的空间必须要手动的释放。
+	
+	stack, 是存在于某作用域的一块内存空间，
+	例如当调用函数, 函数本身会形成一个stack
+	用来存放放置它所接受的参数, 以及
+	返回地址。
+	
+	eg：
+		Type c4;
+			//c4为global object，其生命在整个
+			//程序结束时才结束, 作用域是整个程序
+		Type function( Type& c){
+			Type c1;	
+				//c1被称为auto object,
+				//其生命在作用域结束时结束。
+				//自动调用析构函数。
+			Tyoe* c2 = new Type;
+				//不能忘记delete, 否则造成
+				//内存泄露, 当作用域结束时c2
+				//所指向的heap object仍然存在,
+				//但指针c2的生命却结束了, 作用
+				//域之外再也看不到c2, 也就无法
+				//delete c2
+			static Type c3;	
+				//c3被称为static object,
+				//其生命在作用域结束后仍存在，
+				//直到整个程序结束。		
+			.....
+		}
+		
