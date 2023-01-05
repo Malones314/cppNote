@@ -58,6 +58,80 @@
 	static数据要在类外做一次定义(给不给初值都可以),
 	类内只是声明
 	
+	继承(inheritance): A is-a B (A是一种B)
+		父类(base)数据可以被子类(derived)完全继承
+		函数的继承是继承调用权(子类能调用父类的函数)
+		
+		可以通过子类对象调用父类函数。
+		
+		Template Method:
+			写好框架, 让子类具体实现函数
+		
+		base的析构函数必须是virtual, 否则出现
+		undefined behavior
+		
+		构造由内而外
+			derived的构造函数首先调用base的default
+			构造函数，然后再执行自己。
+		析构由外而内
+			derived的析构函数首先执行自己，然后再调用
+			base的析构函数
+		eg:
+			struct _List_node_base{
+				_List_node_base* _M_next;
+				_List_node_base* _M_prev;
+			};
+			template<typename _Tp>
+			struct _List_node 
+				: public _List_node_base{
+					_Tp _M_data;
+			};
+			
+		non-virtual function
+			不希望derived class重新定义(override)它
+		virtual function
+			希望derived class重新定义(override)它, 
+			且你对它已经有默认定义
+		pure virtual function
+			希望derived class一定要重新定义(override)
+			它, 且你对它没有默认定义
+			
+			
+	复合(composition): A has-a B (A拥有B)
+		eg:
+			class queue{
+				.....
+				protected:
+					deque<T> c;
+				public:
+					bool empty() const {
+						return c.empty();
+					}
+					size_type size() const {
+						return c.size();
+					}
+					.....
+			}
+		构造由内而外
+			container的构造函数先调用component的
+			default构造函数，然后在执行自己的。
+		析构由外而内
+			container的析构函数先执行自己，然后再
+			调用component的析构函数。
+		
+	委托(delegation):	composition by reference 
+		两者用指针相连, 两者生命不同步
+		eg:
+			class String{
+				public:
+					.....
+				private:
+					StringRep* rep;
+			}
+			rep指向的东西可以随着需求的改变而改变
+	
+	
+	
 函数
 
 	函数参数用reference传递	函数返回值为函数中创造的
@@ -121,6 +195,12 @@ reference(实质上就是指针)
 				d.n --;
 				return tmp;
 			}
+	:: 、 . 、 .* 、 ? : 四个不能被重载
+
+template
+	编译器会对function template做实参推倒
+	class template要说明使用的template类型
+	泛化、特化、偏特化
 
 杂记
 	heap，或叫system heap, 是操作系统
