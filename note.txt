@@ -2,7 +2,11 @@
 
 	ctor: 构造函数
 	dtor: 析构函数
-
+	
+	public: 只有当前类能访问
+	protected: 只有当前类和子类能访问
+	public: 所有类都能访问
+	
 	classname(): 临时对象
 	
 	类中能加const则要加const
@@ -130,7 +134,34 @@
 			}
 			rep指向的东西可以随着需求的改变而改变
 	
+	Inheritance+Composition
+		1:
+			base 
+			  |
+			  |
+			derived-----composition
+			构造函数调用次序：
+				先base, 再composition, 最后derived
+			析构函数调用次序：
+				先derived, 再composition, 最后base
+		2:
+			base-----composition
+			  |
+			  |
+			derived
+			构造函数调用次序：
+				先composition, 后base, 最后derived
+			析构函数调用次序：
+				先derived, 后base, 最后composition
 	
+	Delegation+Inheritance
+		 class A{
+			vector<B*> b;
+		 }
+		 class B{
+			.....
+		 }
+		 B类可被继承, A中存数据
 	
 函数
 
