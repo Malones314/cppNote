@@ -214,6 +214,9 @@ reference(实质上就是指针)
 				n++;
 				return tmp; //返回修改前的对象
 			}
+			后置的++不能连续++两次, 即(i++)++错误
+			前置的++可以连续++两次, 即++(++i)正确
+			
 		非成员函数写法：
 		//前置--
 			classname& classname--( classname& d){
