@@ -3,6 +3,9 @@
 	ctor: 构造函数
 	dtor: 析构函数
 	
+	explict: 常用于构造函数前, 说明该构造函数只能
+	显式调用, 让该构造函数不能隐式调用和复制初始化。
+	
 	public: 只有当前类能访问
 	protected: 只有当前类和子类能访问
 	public: 所有类都能访问
@@ -172,6 +175,15 @@
 		每一个成员函数都默认带一个隐藏的this参数
 		(可能是第一个参数也可能是最后一个)
 		
+	conversion function: 转换函数
+		operator Type() const{	//没有返回类型，编译器默认
+								//返回类型为Type
+			.....
+		}
+		一个类可以有多个转换函数, Type类型也不唯一,
+		只要是之前出现过的Type就行
+		
+		
 reference(实质上就是指针)
 
 	使用reference传递参数，传递者无需知道接收者是
@@ -232,10 +244,50 @@ reference(实质上就是指针)
 	:: 、 . 、 .* 、 ? : 四个不能被重载
 
 template
+	class, function, member三大模板
 	编译器会对function template做实参推倒
 	class template要说明使用的template类型
-	泛化、特化、偏特化
+	泛化、specialization(特化)、偏特化
+	
+	
+pointer-like classes: 智能指针
+	template< class T>
+	class shared_ptr{
+	public:
+		T& operator*() const{
+			return *px;
+		}
+		T* operator->() const{	//因为->操作符可以一直作用下去, 所以调用
+								//返回后还是为px->xxx而非没有->
+			return px;
+		}
+		shared_ptr(T* p): px(p) { }
+	private:
+		T* px;
+		long* pn;
+	.....
+	};
 
+function-like classes: 仿函数
+	template < class T>
+	struct identity {
+		const T& operator()(const T& x) const {
+			return x;
+		}
+	};
+	template< class Pair>
+	struct select1st {
+		const typename Pair::first_type& operator()(const Pair& x)const{
+			return x.first;
+		}
+	};
+	template<class Pair>
+	struct select2nd {
+		const typename Pair::second_type& operator() (const Pair& x) const{
+			return x.second;
+		}
+	};
+	
 杂记
 	heap，或叫system heap, 是操作系统
 	提供的一块global内存空间，程序可
@@ -256,7 +308,7 @@ template
 				//c1被称为auto object,
 				//其生命在作用域结束时结束。
 				//自动调用析构函数。
-			Tyoe* c2 = new Type;
+			Type* c2 = new Type;
 				//不能忘记delete, 否则造成
 				//内存泄露, 当作用域结束时c2
 				//所指向的heap object仍然存在,
@@ -269,4 +321,9 @@ template
 				//直到整个程序结束。		
 			.....
 		}
-		
+	struct A{
+		typedef int ii;
+	};
+	A a;
+	sizeof(a); //理论是0, 结果是1 
+	
