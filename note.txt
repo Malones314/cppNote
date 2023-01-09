@@ -249,7 +249,53 @@ template
 	class template要说明使用的template类型
 	泛化、specialization(特化)、偏特化
 	
+	partial specialization:
+		1.个数的偏特化
+			template<typename T, typename Alloc=.....>
+			class vector{
+				.....
+			};
+			template<typename Alloc=.....>
+			class vector<bool, Alloc> {
+				.....
+			};
+		2.范围的偏特化
+			template< typename T>
+			/*c1*/class C{
+				.....
+			};
+			template <typename T>
+			/*c2*/class C<T*>{
+				.....
+			};
+			C<int> obj1;	//使用c1
+			C<int> obj2;	//使用c2
 	
+	template template parameter, 模板模板参数
+		template<typename T, template <typename T> class Container>
+		class XCls{
+			private:
+				Container<T> c;
+			public:
+				.....
+		};
+	
+		template<typename T>
+		using Lst = list<T, allocator<T>>;
+	
+		XCls<string, list> mylst1;	//error
+		XCls<string, Lst> mylst2;
+		
+		而下面的就不是template template parameter:
+		template <class T, class Sequence = deque<T>>
+		class stack{
+			.....
+			protected:
+				Sequence c;	//底层容器
+		};
+		stack<int>s1;
+		stack<int, list<int>> s2;
+		
 pointer-like classes: 智能指针
 	template< class T>
 	class shared_ptr{
@@ -289,15 +335,11 @@ function-like classes: 仿函数
 	};
 	
 杂记
-	heap，或叫system heap, 是操作系统
-	提供的一块global内存空间，程序可
-	动态分配从中获得若干blocks。从heap
-	中获得的空间必须要手动的释放。
+	heap，或叫system heap, 是操作系统提供的一块global内存空间，程序可
+	动态分配从中获得若干blocks。从heap中获得的空间必须要手动的释放。
 	
-	stack, 是存在于某作用域的一块内存空间，
-	例如当调用函数, 函数本身会形成一个stack
-	用来存放放置它所接受的参数, 以及
-	返回地址。
+	stack, 是存在于某作用域的一块内存空间，例如当调用函数, 
+	函数本身会形成一个stack用来存放放置它所接受的参数, 以及返回地址。
 	
 	eg：
 		Type c4;
