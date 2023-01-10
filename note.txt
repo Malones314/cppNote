@@ -73,7 +73,7 @@
 		
 		Template Method:
 			写好框架, 让子类具体实现函数
-		
+
 		base的析构函数必须是virtual, 否则出现
 		undefined behavior
 		
@@ -295,7 +295,18 @@ template
 		};
 		stack<int>s1;
 		stack<int, list<int>> s2;
-		
+
+	variadic templates(数量不定的模板参数):
+		eg:
+			void print(){ }
+			template< typename T, typename... Types>
+			void print( const T& firstArg, const Types&... args){	
+			//传入的参数至少是1个, 所以要重载一个参数为0的print
+				cout << firstArg << endl;
+				print( args...);
+			}
+			可以通过sizeof...(args)可以知道包里面还有多少
+
 pointer-like classes: 智能指针
 	template< class T>
 	class shared_ptr{
@@ -363,9 +374,15 @@ function-like classes: 仿函数
 				//直到整个程序结束。		
 			.....
 		}
+
 	struct A{
 		typedef int ii;
 	};
 	A a;
 	sizeof(a); //理论是0, 结果是1 
 	
+	
+	ranged-base for
+		for( decl : coll){	//尽量传引用
+			.....
+		}
