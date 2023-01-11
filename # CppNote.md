@@ -254,7 +254,12 @@ operator Type() const{	//没有返回类型，编译器默认返回类型为Type
 ```Cpp
 
 使用reference传递参数，传递者无需知道接收者是以reference形式接受
-很少直接声明一个变量类型是reference
+很少直接声明一个变量类型是reference, 常用于参数类型和返回类型的描述
+
+//两者无法并存, 被视为same signature(签名)
+Type function(const Type a){	..... }
+Type function(const Type& a){ ..... }
+//但是如果一个函数在) 加上了const则可以并存, const也被视为签名的一部分
 
 reference设初始值之后再也不能改变代表别的变量
 
