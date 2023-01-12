@@ -15,6 +15,14 @@ classname(): 临时对象
 
 类中能加const则要加const
 
+当成员函数的 const 版本和 non-const 版本同时存在时,
+const 对象只能调用 const 函数
+non-const 对象只能调用non-const 函数
+
+const 成员函数可以被 const 对象和non-const 对象调用
+non-const 成员函数只能被non-const 对象调用
+
+
 类的构造函数要使用初始化列表
 
 如果类中有指针则必须要带有：
@@ -78,6 +86,8 @@ delete时先调用析构函数, 再释放memory
 函数的继承是继承调用权(子类能调用父类的函数)
 
 可以通过子类对象调用父类函数。
+
+子类若重写了父类的虚函数则通过子类调用的是子类重写的虚函数
 
 Template Method:
 	写好框架, 让子类具体实现函数
@@ -228,11 +238,53 @@ struct select2nd {
 	}
 };
 ```
+
+# 对象模型(Object Model)
+#### virtual pointer 和 virtual table
+```Cpp
+类中如果有 virtual function, 则类大小为数据大小加一根指针的大小, 
+该指针为 virtual pointer
+
+对象调用函数是静态调用, 指针调用函数是动态调用
+如果是对象调用虚函数则无需多想, 属于哪个Type则调用谁的函数
+如果是指针调用虚函数，则new了哪个Type就调用那个的函数
+
+virtual function调用不是静态绑定用call语句的调用, 是通过动态绑定，
+用 virtual pointer, 指向 virtual table, 
+virtual table用来查 virtual function地址
+p指向类的对象, vptr为虚指针, n为虚表内函数序号(编译器在编译代码时会给, 从0开始)
+
+( *( p->vptr) [n])( p);
+(* p->vptr [n])( p);	//也是对的, 因为*的优先级高于[]
+```
+```cpp
+class A{
+	virtual void function1(){ .....}
+	virtual void function2(){ .....}
+};
+class B : public A{
+	virtual void function1(){ .....}
+};
+class C : public B{
+	virtual void function1(){ .....}
+};
+
+A可以调用：
+	A::function1()
+	A::function2()
+B可以调用:
+	A::function2()
+	B::function1()
+C可以调用：
+	C::function1()
+	A::function2()
+```
 # 函数
 ```Cpp
 
 函数参数要用reference传递	
 函数返回值为函数中创造的本地变量、本地对象，则不能return by reference
+non-const 且有数据共享的 function要考虑Copy On Write(COW)
 ```
 #### 1.成员函数
 ```Cpp
@@ -428,6 +480,7 @@ heap，或叫system heap, 是操作系统提供的一块global内存空间，程
 
 stack, 是存在于某作用域的一块内存空间，例如当调用函数, 
 函数本身会形成一个stack用来存放放置它所接受的参数, 以及返回地址。
+
 ```
 ```cpp{.line-numbers}
 Type c4;	//c4为global object，其生命在整个程序结束时才结束, 作用域是整个程序
