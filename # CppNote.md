@@ -77,8 +77,51 @@ delete时先调用析构函数, 再释放memory
 使用[]后编译器会知道要调用多少次dtor(在cookie后4字节会说明需要调用多少次)
 但如果类中不带指针, 则delete时不使用[]也不会造成内存泄露(为了一致性, 建议也写[])
 
+new 和 delete 无法重载, new 和 delete 被分解成三个动作, 其中
+operator new 和 operator delete 可以重载
+还可以重载多种类型的 new()、delete(), 但是不同版本要有独一无二的参数列表,
+其中的第一参数必须为 size_t
 ```
+```Cpp
+new 被分解为
+void* mem = operator new ( sizeof( Type));
+p = static_cast<Type*>( mem);
+p->Type::Tyoe();
+delete 被分解为
+p->~Type();
+operator delete( p);
+```
+```cpp
+operator new 重载
+void* myAlloc( size_t size){
+	return malloc( size);
+}
+inline void* operator new ( size_t size){
+	.....
+	return myAlloc( size);
+}
+inline void* operator new[]( size_t size){
+	.....
+	return myAlloc( size);
+}
 
+operator delete 重载
+void myFree( void* ptr){
+	return free( ptr);
+}
+inline void operator delete( void* ptr){
+	.....
+	return myFree( ptr);
+}
+inline void operator delete( void* ptr){
+	.....
+	return myFree( ptr);
+}
+
+Type* a = ::new Type;	//强制调用global operator new
+::delete a;		//强制调用global operator delete
+
+```
 #### 3. 继承(inheritance): A is-a B (A是一种B)
 ```Cpp
 
