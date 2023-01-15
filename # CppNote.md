@@ -168,7 +168,26 @@ pure virtual function
 	希望derived class一定要重新定义(override)
 	它, 且你对它没有默认定义
 ```
-			
+
+##### 3种继承方式
+###### 1. public继承方式
+```cpp
+基类中所有 public 成员在派生类中为 public 属性
+基类中所有 protected 成员在派生类中为 protected 属性
+基类中所有 private 成员在派生类中不能使用
+```
+###### 2. protected继承方式
+```cpp
+基类中的所有 public 成员在派生类中为 protected 属性
+基类中的所有 protected 成员在派生类中为 protected 属性
+基类中的所有 private 成员在派生类中不能使用
+```
+###### 3. private继承方式
+```cpp
+基类中的所有 public 成员在派生类中均为 private 属性
+基类中的所有 protected 成员在派生类中均为 private 属性
+基类中的所有 private 成员在派生类中不能使用
+```
 #### 4. 复合(composition): A has-a B (A拥有B)
 
 ```Cpp{.line-numbers}
@@ -503,6 +522,7 @@ stack<int>s1;
 stack<int, list<int>> s2;
 ```
 #### 3. variadic templates(数量不定的模板参数):
+	可以很方便的完成recursive function call(递归函数调用)
 ```cpp{.line-numbers}
 
 void print(){ }
