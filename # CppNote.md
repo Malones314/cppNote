@@ -423,6 +423,7 @@ ostream& operator << ( ostream& os, const Type& t){
 }
 ```
 #### 2. 对于自增自减操作符重载
+	好的后置++的写法是内部调用前置++
 	成员函数的写法：
 ```cpp{.line-numbers}
 //前置 ++
