@@ -537,7 +537,7 @@ void print( const T& firstArg, const Types&... args){
 ```
 
 	
-#杂记
+# 杂记
 ```Cpp
 heap，或叫system heap, 是操作系统提供的一块global内存空间，程序可
 动态分配从中获得若干blocks。从heap中获得的空间必须要手动的释放。
@@ -545,7 +545,9 @@ heap，或叫system heap, 是操作系统提供的一块global内存空间，程
 stack, 是存在于某作用域的一块内存空间，例如当调用函数, 
 函数本身会形成一个stack用来存放放置它所接受的参数, 以及返回地址。
 
+可以使用nullptr代替0或者NULL
 ```
+
 ```cpp{.line-numbers}
 Type c4;	//c4为global object，其生命在整个程序结束时才结束, 作用域是整个程序
 
@@ -574,3 +576,12 @@ for( decl : coll){	//ranged-base for, 尽量传引用
 	.....
 }
 ```
+
+#### uniform initialization
+```cpp
+可以用统一的{}初始化, 当编译器看见{ t1, t2, t3, ..., tn}时, 会做出一个
+initializer_list<Type>，关联到一个array< Type, n>, 调用函数(eg:ctor)时
+该array内的元素被编译器分解逐一传给函数。若函数参数是个initializer_list<Type>,
+调用者不能给出数个Type参数然后以为他们会被自动转为一个initializer_list<Type>传入
+```
+##### initializer
