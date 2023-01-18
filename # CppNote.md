@@ -301,6 +301,12 @@ struct select2nd {
 };
 ```
 
+#### 10. explicit
+```cpp
+用于接受一个以上实参的构造函数, 取消ctor的隐式调用
+
+```
+
 # 对象模型(Object Model)
 #### virtual pointer 和 virtual table
 ```Cpp
@@ -584,4 +590,11 @@ initializer_list<Type>，关联到一个array< Type, n>, 调用函数(eg:ctor)�
 该array内的元素被编译器分解逐一传给函数。若函数参数是个initializer_list<Type>,
 调用者不能给出数个Type参数然后以为他们会被自动转为一个initializer_list<Type>传入
 ```
-##### initializer
+##### initializer_list<>
+```cpp
+void function( std::initializer_list<Type> num){	//可接受任意个数的参数
+	for( auto a = num.begin(); a != num.end(); a++)
+	.....
+}
+function( {.....});
+```
