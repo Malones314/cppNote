@@ -45,6 +45,17 @@ static成员函数没有this指针, 只能处理static数据
 
 static数据要在类外做一次定义(给不给初值都可以),
 类内只是声明
+
+empty class 在经过编译器编译后就不是empty了, 有
+一个copy ctor、一个copy assignment operator、一个dtor
+所有这些function都是public且inline
+default ctor 和 dtor 主要给编译器一个地方存放‘藏身幕后’的code, 
+eg: 唤起base classes、non-static members的ctors和dtors
+
+编译器产生的dtor是non-virtual, 除非这个class的base class本身宣告有virtual dtor
+
+如果class中有pointer则要写big-three/big-Five, 如果没有则一般不需要写
+
 ```
 
 #### 1. 拷贝赋值的重载
@@ -304,9 +315,57 @@ struct select2nd {
 #### 10. explicit
 ```cpp
 用于接受一个以上实参的构造函数, 取消ctor的隐式调用
+```
+#### 11. =default  /  =delete
+```cpp
+如果自己定义了一个ctor/dtor那么编译器不会再给你一个default ctor/dtor
+如果你强制加上=default, 就可以重新获得并使用default ctor/dtor(可以在继承等时候使用)
+
+=delete告诉编译器不要定义该函数, 必须出现在声明式中, 还用与任何成员函数, 如果
+用于dtor则后果自负。
+
+拷贝构造函数不能被重载，如果自己写了拷贝构造函数则不能写=default
+一个函数只能在最初定义的时候定义为delete
+一般函数不能定义为default
+default只能用于构造函数, 拷贝构造函数, 搬移构造函数, 搬移赋值函数, 析构函数
+
+dtor定义=delete则无法destroy objects
 
 ```
-
+```cpp
+class A{
+public:
+	A( int a){
+		.....
+	}
+	A() = default;	//如果没有则A a; 出错
+};
+```
+```cpp
+struct NoCopy{
+	NoCopy() = default;
+	NoCopy( const NoCopy&) = delete;	//无法拷贝
+	NoCopy &operator=( const NoCopy&) = delete;	//无法赋值
+	~NoCopy() = default;	//使用默认析构函数
+	.....
+};
+struct NoDtor{
+	NoDtor() = default;
+	~NoDtor() = delete;	//无法destroy objects of type NoDtor
+};
+NoDtor nd;	//error
+NoDtor *np = new NoDtor();	//ok, 但无法delete np
+delete np;	//error
+class PrivateCopy{	//此class只能被friends和members copy
+	private:
+		PrivateCopy( const PrivateCopy &);
+		PrivateCopy &operator=( const PrivateCopy&);
+		.....
+	public:
+		PrivateCopy() = default;
+		~PrivateCopy();
+};
+```
 # 对象模型(Object Model)
 #### virtual pointer 和 virtual table
 ```Cpp
