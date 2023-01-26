@@ -600,7 +600,43 @@ void print( const T& firstArg, const Types&... args){
 }
 //可以通过sizeof...(args)可以知道包里面还有多少
 ```
+#### 4.alias template
+```cpp
+template< typename T>
+using vec = std::vector<T, myAlloc<T>>;
+vec<int> myVec;
+不能对alias template做任何特化
+```
+```cpp
+#define 和 typedef 都无法有上述效果
 
+#define vec<T> template <tempname T> std::vector< T, myAlloc<T>>;
+vec<int> myVec; 
+|
+ ------> template <tempname int> std::vector< int, myAlloc<int>>; myVec;
+
+typedef 不接受参数, 最多能写成
+typedef std::vector< int, myAlloc<int>> vec; 
+```
+#### template template parameter
+```cpp
+alias template的意义：
+
+Type function( mytype1 a, mytype2 b){
+	mytype1< mytype2> c;	//error
+	//mytype1 was not declared in this scope
+	//mytype1 was not declared in this scope
+	........
+}
+
+template< typename mytype1, typename T>
+Type function( mytype1 a, mytype2 b){
+	mytype1<mytype2> c;	//error
+	//mytype1 is not a template
+	.....
+}
+
+```
 	
 # 杂记
 ```Cpp
