@@ -558,36 +558,7 @@ class C<T*>{	//c2
 C<int> obj1;	//使用c1
 C<int> obj2;	//使用c2
 ```
-#### 2. template template parameter, 模板模板参数
-```cpp{.line-numbers}
-
-template<typename T, template <typename T> class Container>
-class XCls{
-	private:
-		Container<T> c;
-	public:
-		.....
-};
-
-template<typename T>
-using Lst = list<T, allocator<T>>;
-
-XCls<string, list> mylst1;	//error
-XCls<string, Lst> mylst2;
-```
-而下面的就不是template template parameter:
-```cpp{.line-numbers}
-
-template <class T, class Sequence = deque<T>>
-class stack{
-	.....
-	protected:
-		Sequence c;	//底层容器
-};
-stack<int>s1;
-stack<int, list<int>> s2;
-```
-#### 3. variadic templates(数量不定的模板参数):
+#### 2. variadic templates(数量不定的模板参数):
 	可以很方便的完成recursive function call(递归函数调用)
 ```cpp{.line-numbers}
 
@@ -600,7 +571,7 @@ void print( const T& firstArg, const Types&... args){
 }
 //可以通过sizeof...(args)可以知道包里面还有多少
 ```
-#### 4.alias template
+#### 3.alias template
 ```cpp
 template< typename T>
 using vec = std::vector<T, myAlloc<T>>;
@@ -618,9 +589,8 @@ vec<int> myVec;
 typedef 不接受参数, 最多能写成
 typedef std::vector< int, myAlloc<int>> vec; 
 ```
-#### template template parameter
+##### template template parameter 模板模板参数
 ```cpp
-alias template的意义：
 
 Type function( mytype1 a, mytype2 b){
 	mytype1< mytype2> c;	//error
@@ -628,7 +598,8 @@ Type function( mytype1 a, mytype2 b){
 	//mytype1 was not declared in this scope
 	........
 }
-
+```
+```cpp
 template< typename mytype1, typename T>
 Type function( mytype1 a, mytype2 b){
 	mytype1<mytype2> c;	//error
@@ -637,7 +608,35 @@ Type function( mytype1 a, mytype2 b){
 }
 
 ```
-	
+```cpp
+
+template< typename mytype1, 
+	template <typename mytype1/*此处的mytype1可以不写*/> class Container>
+class XCls{
+	private:
+		Container<T> c;
+	public:
+		.....
+};
+
+template<typename T>
+using Lst = list<T, allocator<T>>;	//alias template的意义
+
+XCls<string, list> mylst1;	//error
+XCls<string, Lst> mylst2;
+```
+而下面的就不是template template parameter:
+```cpp{.line-numbers}
+
+template <class T, class Sequence = deque<T>>
+class stack{
+	.....
+	protected:
+		Sequence c;	//底层容器
+};
+stack<int>s1;
+stack<int, list<int>> s2;
+```
 # 杂记
 ```Cpp
 heap，或叫system heap, 是操作系统提供的一块global内存空间，程序可
@@ -693,3 +692,40 @@ void function( std::initializer_list<Type> num){	//可接受任意个数的参�
 }
 function( {.....});
 ```
+
+#### Type Alias(类似typedef)
+```cpp
+//两者等价
+typedef void ( *func)();
+using func = void(*) ();
+void function(){
+	......
+}
+func fun = function;	//函数名称就是一个函数指针
+//以下函数指针写法是错误的：
+void (*function)()	//这是一个变量不能像函数一样定义
+{
+	.....
+}
+```
+#### using的几种用法
+```cpp
+1. using namespace std;	using std::cout; 等using namespace 和 namespace 的member
+2. using ClassName::MemberName;
+3. type alias 和 alias template
+```
+
+#### noexcept
+```cpp
+Type function() noexcept;	//相当于Type function() noexcept(true);
+Type function() noexcept(条件a);	//在条件a为真下不会出现异常
+
+```
+
+
+
+
+
+
+
+
