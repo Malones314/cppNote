@@ -406,6 +406,33 @@ C可以调用：
 	C::function1()
 	A::function2()
 ```
+#### override
+```cpp
+父类的虚函数子类如果要对其override则两者签名必须要完全相同
+子类对父类的虚函数复写可在函数名后面加上overrid告知编译器是对其的复写,
+让编译器帮助检车是否有签名错误, 如果有则error
+eg：
+void function ( int) {.....}
+void function ( double ) {.....}
+两者签名不同, 不是override, 会把子类的当成一个新函数
+如果子类写成：
+void function( double) override {.....}
+编译器报错
+```
+#### final
+```cpp
+class finalClass final{
+	.....
+};
+finalClass不能被别的类继承, final表示这个类是继承关系下最底层的类
+class A{
+	virtual void finalFunction() final;
+};
+class B: A{
+	void finalFunction();	//[Error] overriding final function
+};
+finalFunction不能被子类复写
+```
 # 函数
 ```Cpp
 
@@ -427,6 +454,42 @@ operator Type() const{	//没有返回类型，编译器默认返回类型为Type
 	.....
 }
 一个类可以有多个转换函数, Type类型也不唯一,只要是之前出现过的Type就行
+```
+
+#### 3.lambda
+```cpp
+一种inline function，可以被当作参数或本地变量, lambda的出现改变了
+cpp标准库的使用方式
+
+[.....] (.....) mutableOpt throwSpecOpt -> retTypeOpt{.....}
+throwSpec是否抛出异常
+retType返回类型
+Opt:选用,可写可不写
+如果三个都没有则(.....)也是可写可不写
+(.....)放函数参数, 像一般函数一样
+
+1.[]:没有使用任何函数对象参数。
+2.[=]:函数体内可以使用Lambda所在作用范围内所有可见的局部变量(包括Lambda所在类
+的this)，并且是值传递方式。
+3.[&]:同上不过是引用传递方式。
+4.[this]:函数体内可以使用Lambda所在类中的成员变量。
+5.[a]:将a按值进行传递。
+6.[&a]:将a按引用进行传递。
+7.[a,&b]:将a按值进行传递，b按引用进行传递。
+8.[=, &a, &b]:除a和b按引用进行传递外，其他参数都按值进行传递。
+9.[&, a, b]:除a和b按值进行传递外，其他参数都按引用进行传递。
+```
+
+```cpp
+auto k = []{
+	std::cout << "hello";
+};	//;不能忘
+k();	//输出hello
+
+//直接调用：
+[]{
+	std::cout << "hello";
+}();	//() ; 不能忘
 ```
 
 # reference(实质上就是指针)
@@ -677,7 +740,7 @@ for( decl : coll){	//ranged-base for, 尽量传引用
 }
 ```
 
-#### uniform initialization
+#### 1.uniform initialization
 ```cpp
 可以用统一的{}初始化, 当编译器看见{ t1, t2, t3, ..., tn}时, 会做出一个
 initializer_list<Type>，关联到一个array< Type, n>, 调用函数(eg:ctor)时
@@ -693,7 +756,7 @@ void function( std::initializer_list<Type> num){	//可接受任意个数的参�
 function( {.....});
 ```
 
-#### Type Alias(类似typedef)
+#### 2.Type Alias(类似typedef)
 ```cpp
 //两者等价
 typedef void ( *func)();
@@ -708,23 +771,68 @@ void (*function)()	//这是一个变量不能像函数一样定义
 	.....
 }
 ```
-#### using的几种用法
+#### 3.using的几种用法
 ```cpp
 1. using namespace std;	using std::cout; 等using namespace 和 namespace 的member
 2. using ClassName::MemberName;
 3. type alias 和 alias template
 ```
 
-#### noexcept
+#### 4.noexcept
 ```cpp
 Type function() noexcept;	//相当于Type function() noexcept(true);
 Type function() noexcept(条件a);	//在条件a为真下不会出现异常
 
+异常一定要被处理, 如果不处理则一直向上抛出异常, 如果一直没被处理则调用std::terminate(),
+std::ternimate()调用std::abort(), abort()会结束整个程序
 ```
+#### 5.decltype
+```cpp
+decltype关键字可以让编译器找出表达式的type
+eg：
+map< string, double> c;
+.....
+decltype(c)::value_type e;	//相当于 map<string, double>::value_type e;
+```
+##### 用法1：声明一个return type
+```cpp
+template< class type1, class type2>
+decltype ( x + y) add( type1 x, type2 y);	
+	//编译无法通过, 因为在使用decltype (x+y)时编译器不知道x、y是什么
 
+//正确写法：
+auto add( type1 x, type2 y) -> decltype ( x + y);
+```
+##### 用法2：可用于template metaprogramming(模板元编程)
+```cpp
+template< typename T>
+void funtion( T obj){
+	map< string, double>::value_type elem1;
+	map< string, double> coll;
+	decltype(coll)::value_type elem2;
+	typedef typename decltype(obj)::iterator iType;	//typename告诉编译器后面
+		//的是一个类型名而非变量名
+	iType elem3;
+}
+```
+##### 用法3：传递lambda的类型
+```cpp
+面对lambda, 我们手上往往只有对象, 类型常用auto又编译器推倒, 想要获得
+其type就需要借助decltype
+```
+#### 6.mutable 
+```cpp
+用来修饰类的数据成员, 而被 mutable 修饰的数据成员, 可以在 const 成员函数中修改
 
+用于lambda表达式, 可以修改按值捕获的方式中的变量
+auto function = [=]() {	// error
+	x = 1;
+};
+auto function = [=]() mutable { 
+	x = 1;
+};
 
-
+```
 
 
 
