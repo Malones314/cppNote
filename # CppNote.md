@@ -491,6 +491,36 @@ k();	//输出hello
 	std::cout << "hello";
 }();	//() ; 不能忘
 ```
+```cpp
+lambda相当于一种匿名的function object
+auto f = [id]() mutable{	//无mutable则id不可更改
+	cout << id;
+	id++;
+};
+//相当于：
+class Functor{
+private:
+	int id;
+public:
+	void operator(){
+		cout << id;
+		id++;
+	}
+};
+Functor f;
+```
+```cpp
+int id = 0;
+auto f = [id]() mutable{
+	cout << id;
+	id++;
+};
+id = 1;
+f();	//0
+f();	//1
+f();	//2
+cout << id;	//1
+```
 
 # reference(实质上就是指针)
 ```Cpp
