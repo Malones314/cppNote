@@ -664,6 +664,7 @@ C<int> obj2;	//使用c2
 	可以很方便的完成recursive function call(递归函数调用)
 ```cpp{.line-numbers}
 
+//记住...出现位置
 void print(){ }
 template< typename T, typename... Types>
 void print( const T& firstArg, const Types&... args){	
@@ -672,6 +673,20 @@ void print( const T& firstArg, const Types&... args){
 	print( args...);
 }
 //可以通过sizeof...(args)可以知道包里面还有多少
+```
+```cpp{.line-numbers}
+void func(){}
+template <typename T, typename... types>
+void func( const T& firstElem, const types&... otherEle ){
+    .....
+    func( otherEle...);
+}
+template<typename... types>
+void func(const types&... otherEle ){
+    .....
+    func( otherEle...);
+}
+//第三行的函数更加特化, 两者可以共存, 第八行的函数永远不会被调用
 ```
 #### 3.alias template
 ```cpp
