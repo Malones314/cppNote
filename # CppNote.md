@@ -662,8 +662,7 @@ C<int> obj2;	//使用c2
 ```
 #### 2. variadic templates(数量不定的模板参数):
 	可以很方便的完成recursive function call(递归函数调用)
-```cpp{.line-numbers}
-
+```cpp
 //记住...出现位置
 void print(){ }
 template< typename T, typename... Types>
@@ -687,6 +686,62 @@ void func(const types&... otherEle ){
     func( otherEle...);
 }
 //第三行的函数更加特化, 两者可以共存, 第八行的函数永远不会被调用
+```
+```cpp
+//任意个数比大小得到最大的
+int myMax( int n){
+	return n;
+}
+template<typename... Args>
+int myMax( int n, Args... args){
+	return std::max( n, myMax( args...));	//通过不断调用max函数完成最大值的获取
+		//其实max()已经可以接受任意个数的参数值
+}
+```
+```cpp
+//对于variadic template还有递归的创建类，递归的继承类
+tenolate<typename... Value> class tuple;
+template<>class tuple<>{};
+
+template<typename Head, typename... Tail>
+class tuple<Head, Tail...> : private tuple<Tail...>{
+	typedef tuple<Tail...> inherited;
+protected:
+	Head m_head;
+public:
+	tuple(){}
+	tuple(Head v, Tail... vtail):m_head(v), inherited(vtail...){}
+
+	typename Head::type head(){	return m_head; }	//error, 如果Head
+		//是int类型, 没有::运算符
+	//应改为：
+	auto head()->decltype( m_head){ return m_head;}
+	//也可以直接写成：
+	Head head() { return m_head;}
+
+	inherited& tail(){
+		return *this;	//return 的是inherited是除去了第一个元素的包
+	}
+};
+```
+```cpp
+//对于variadic template还有递归的复合类
+tenolate<typename... Value> class tuple;
+template<>class tuple<>{};
+
+template<typename Head, typename... Tail>
+class tuple<Head, Tail...> : private tuple<Tail...>{
+	typedef tuple<Tail...> composited;
+protected:
+	composited m_tail;
+	Head m_head;
+public:
+	tuple(){}
+	tuple(Head v, Tail... vtail):m_head(v), m_tail(vtail...){}
+	Head head() { return m_head;}
+
+	composited& tail(){ return m_tail; }
+};
 ```
 #### 3.alias template
 ```cpp
@@ -865,7 +920,7 @@ void funtion( T obj){
 	map< string, double> coll;
 	decltype(coll)::value_type elem2;
 	typedef typename decltype(obj)::iterator iType;	//typename告诉编译器后面
-		//的是一个类型名而非变量名
+		//的是一个类型名而非变量名, 有::正规的编译器都要求要写typename
 	iType elem3;
 }
 ```
