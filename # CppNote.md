@@ -942,7 +942,14 @@ auto function = [=]() mutable {
 };
 
 ```
+#### 7.Rvalue reference
+```cpp
+可以解决unnecessary copying和perfect forwardding
+临时对象是一种Rvalue, Rvalue不能放在 = 左边
+编译器面对临时对象一定会当成Rvalue reference
+被move之后原来的东西就不能用了(因为是浅拷贝, 移动了指针)
 
+```
 
 
 
