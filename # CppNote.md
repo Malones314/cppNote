@@ -818,6 +818,8 @@ stack, 是存在于某作用域的一块内存空间，例如当调用函数,
 函数本身会形成一个stack用来存放放置它所接受的参数, 以及返回地址。
 
 可以使用nullptr代替0或者NULL
+
+浅拷贝时要想到是否需要自我赋值检测
 ```
 
 ```cpp{.line-numbers}
@@ -942,12 +944,23 @@ auto function = [=]() mutable {
 };
 
 ```
-#### 7.Rvalue reference
+#### 7.move
 ```cpp
-可以解决unnecessary copying和perfect forwardding
+可以解决unnecessary copying问题 和 做出perfect forwardding
 临时对象是一种Rvalue, Rvalue不能放在 = 左边
 编译器面对临时对象一定会当成Rvalue reference
-被move之后原来的东西就不能用了(因为是浅拷贝, 移动了指针)
+
+被move之后原来的东西就不能用了(因为是浅拷贝, 移动了指针, 而非重新分配内存)
+eg:	
+	type c;
+	type c1(c);	
+	type c2( std::move(c));	//这条语句之后, 都不能使用c了
+
+function( move( a));	//调用Rvalue版本的function
+对于一个类应该有对应的copy assignment和move assignment
+
+move ctor对以结点方式存储的容器影响不大
+
 
 ```
 
