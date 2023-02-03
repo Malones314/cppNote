@@ -960,9 +960,67 @@ function( move( a));	//调用Rvalue版本的function
 对于一个类应该有对应的copy assignment和move assignment
 
 move ctor对以结点方式存储的容器影响不大
+```
+```cpp
+class MyString{
+private:
+	char* _data;
+	size_t _len;
+	void _init_data( const char* s){
+		_data = new char[ _len+1];
+		memcpy( _data, s, _len);
+		_data[ _len] = '\0';
+	}
+public:
+	MyString() : _data( NULL), len(0) { ++DCtor;}
+	MyString( const char* p) : _len( strlen( p)){
+		_init_data( p);
+	}
+	MyString( const MyString& str) : _len( str._len) {
+		_init_data( str._data);	//copy
+	}
+	myStirng( MyString&& str) noexcept : _data( str._data), _len( str._len){
+		str._len = 0;
+		str._data = NULL;	//重要！必须写, 不然发生错误
+	}
+	MyString& operator=( const MyString& str){
+		if( this != &str){
+			if( _data) 
+				delete _data;
+			_len = str._len;
+			_init_data( str._data);	//copy
+		}else{		}
+		return *this;
+	}
+	MyString& operator=( const MyString&& str) noexcept{
+		if( this != &str){
+			if( _data) 
+				delete _data;
+			_len = str._len;
+			_data = str._data;	//move
+			str._len = 0;
+			str._data = NULL;	//重要！必须写, 不然发生错误
+		}
+		return *this;
+	}
+	virtual ~MyString(){
+		if( _data) 	//上面写的str._data = NULL;的作用, 如果不写则会发生内存泄漏
+			delete _data;
+	}
 
+};
+```
+#### 8. tuple
+```cpp
+tuple的做法是递归的继承
+
+tuple<type1, type2, type3> t1;
+auto t2 = make_tuple( element1, element2, element3);
+get<n>t1;
+typedef tuple<type1, type2, type3> TypleType;
+tuple_size<TypleType>::value	//tuple内个数, 3
+tuple_element<1, TypleType>::tupe element1 = 3;
+	//相当于：type1 element = 3;
 
 ```
-
-
 
