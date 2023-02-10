@@ -1023,4 +1023,31 @@ tuple_element<1, TypleType>::tupe element1 = 3;
 	//相当于：type1 element = 3;
 
 ```
-
+#### 9. 预处理
+```cpp
+#if 整型常量表达式1
+    程序段1
+#elif 整型常量表达式2
+    程序段2
+#elif 整型常量表达式3
+    程序段3
+#else
+    程序段4
+#endif
+```
+```cpp
+#ifdef  宏名
+    程序段1
+#else
+    程序段2
+#endif
+//如果宏名被定义过，则执行程序段1
+```
+```cpp
+#ifndef 宏名
+    程序段1 
+#else 
+    程序段2 
+#endif
+//如果宏名没有被定义过，则执行程序段1
+```
