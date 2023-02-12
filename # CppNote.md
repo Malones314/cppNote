@@ -885,7 +885,7 @@ void (*function)()	//这是一个变量不能像函数一样定义
 #### 3.using的几种用法
 ```cpp
 1. using namespace std;	using std::cout; 等using namespace 和 namespace 的member
-2. using ClassName::MemberName;
+2. using ClassName::MemberName;	//使用ClassName中的MemberName
 3. type alias 和 alias template
 ```
 
