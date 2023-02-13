@@ -820,6 +820,8 @@ stack, 是存在于某作用域的一块内存空间，例如当调用函数,
 可以使用nullptr代替0或者NULL
 
 浅拷贝时要想到是否需要自我赋值检测
+
+break 要和 loop or switch 一起使用，用于跳出单层的loop or switch
 ```
 
 ```cpp{.line-numbers}
