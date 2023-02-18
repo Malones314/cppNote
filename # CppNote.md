@@ -79,8 +79,19 @@ classname& operator=( classname& a){	//因为可能连续赋值, 所以返回类
 ```
 
 #### 2. new / delete
-```Cpp
+```cpp
+new 表示在堆上分配内存的请求，如果有足够的可用内存，new 运算符会初始化内存
+并将新分配和初始化的内存的地址返回给指针变量。
+当使用new运算符来创造类对象时，对象的内存是使用堆中的 operator new 分配的。然后
+调用对应的ctor
+```
+```cpp
+operator new 是一个分配原始内存的函数，operator new 可以重载，它不初始化内存，
+即不调用构造函数。但是，在我们重载的 new 返回后，编译器也会在适用时自动调用构造
+函数。也可以全局或为特定类重载 operator new。
 
+```
+```Cpp
 new时先分配memory, 再调用构造函数
 delete时先调用析构函数, 再释放memory
 
@@ -778,10 +789,8 @@ Type function( mytype1 a, mytype2 b){
 	//mytype1 is not a template
 	.....
 }
-
 ```
 ```cpp
-
 template< typename mytype1, 
 	template <typename mytype1/*此处的mytype1可以不写*/> class Container>
 class XCls{
@@ -962,6 +971,20 @@ function( move( a));	//调用Rvalue版本的function
 对于一个类应该有对应的copy assignment和move assignment
 
 move ctor对以结点方式存储的容器影响不大
+```
+```cpp
+std::forward(arg)
+如果arg不是Lvalue reference则返回arg的Rvalue reference，
+如果arg是Lvalue reference则不做任何改变
+template <class T> T&& forward (typename remove_reference<T>::type& arg) noexcept;
+template <class T> T&& forward (typename remove_reference<T>::type&& arg) noexcept;
+两者都返回static_cast<decltype(arg)&&>(arg)
+```
+```cpp
+这是一个辅助函数，允许将作为Rvalue reference的参数完美转发到推导类型，保留任何
+可能涉及的move语义。需要此函数是因为所有命名值（例如函数参数）始终评估为左值
+（即使是那些声明为右值引用的值）, 这给将参数转发给其他函数的模板函数保留潜在的
+move语义带来了困难。
 ```
 ```cpp
 class MyString{
