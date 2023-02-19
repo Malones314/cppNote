@@ -831,6 +831,9 @@ stack, 是存在于某作用域的一块内存空间，例如当调用函数,
 浅拷贝时要想到是否需要自我赋值检测
 
 break 要和 loop or switch 一起使用，用于跳出单层的loop or switch
+
+void*: 没有关联数据类型的指针。void 指针可以保存任何类型的地址，
+并且可以类型转换为任何类型。
 ```
 
 ```cpp{.line-numbers}
@@ -1075,4 +1078,76 @@ tuple_element<1, TypleType>::tupe element1 = 3;
     程序段2 
 #endif
 //如果宏名没有被定义过，则执行程序段1
+``` 
+#### 10.一些type_traits中的模板
+##### remove_all_extents
+如果 T 是某种类型 X 的多维数组，则提供 X 的成员 的类型，否则类型为 T。
+不能对remove_all_extents进行特化
+```
+template< class T >
+struct remove_all_extents;
+```
+```cpp
+
+template<class T>
+struct remove_all_extents { typedef T type; };
+ 
+template<class T>
+struct remove_all_extents<T[]> {
+    typedef typename remove_all_extents<T>::type type;
+};
+ 
+template<class T, std::size_t N>
+struct remove_all_extents<T[N]> {
+    typedef typename remove_all_extents<T>::type type;
+};
+```
+example
+```cpp
+template<class A>
+void info(const A&) {
+    typedef typename std::remove_all_extents<A>::type Type;
+    std::cout <<  typeid(Type).name() << endl;
+}
+class className2 { int m; };
+int main()
+{
+    float a0;
+    float a1[1][2][3];
+    float a2[1][1][1][1][2];
+    float* a3;
+    int a4[3][2];
+    double a5[2][3];
+    struct X { int m; } x0[3][3];
+    class className1 { int m; } x1[3][3];
+    class className2 x2[3][3];
+    cout << "a0  "; info(a0);	//a0  f
+    cout << "a1  "; info(a1);	//a1  f
+    cout << "a2  "; info(a2);	//a2  f
+    cout << "a3  "; info(a3);	//a3  Pf
+    cout << "a4  "; info(a4);	//a4  i
+    cout << "a5  "; info(a5);	//a5  d
+    cout << "x0  "; info(x0);	//x0  Z4mainE1X
+    cout << "x1  "; info(x1);	//x1  Z4mainE10className1
+    cout << "x2  "; info(x2);	//x2  10className2
+    return 0;
+}
+```
+##### is_destructible
+```cpp
+template< class T >
+struct is_destructible;
+如果 T 是reference type，则提供等于true的成员常量值。
+若 T 是const或volatile(包含void)或函数类型,则提供等于false的成员常量值。
+若 T 是对象类型，则对于等于 std::remove_all_extents<T>::type 的
+类型 U ，若表达式 std::declval<U&>().~U() 在不求值语境合法，则value 
+等于 true 。否则，value 等于 false 。
+```
+##### is_trivially_destructible
+```cpp
+
+```
+##### is_nothrow_destructible
+```cpp
+
 ```
