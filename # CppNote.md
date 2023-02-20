@@ -58,7 +58,7 @@ eg: 唤起base classes、non-static members的ctors和dtors
 
 ```
 
-#### 1. 拷贝赋值的重载
+## 1. 拷贝赋值的重载
 ```Cpp
 
 需要检测自我赋值, 好处：
@@ -78,7 +78,7 @@ classname& operator=( classname& a){	//因为可能连续赋值, 所以返回类
 }
 ```
 
-#### 2. new / delete
+## 2. new / delete
 ```cpp
 new 表示在堆上分配内存的请求，如果有足够的可用内存，new 运算符会初始化内存
 并将新分配和初始化的内存的地址返回给指针变量。
@@ -144,7 +144,7 @@ Type* a = ::new Type;	//强制调用global operator new
 ::delete a;		//强制调用global operator delete
 
 ```
-#### 3. 继承(inheritance): A is-a B (A是一种B)
+## 3. 继承(inheritance): A is-a B (A是一种B)
 ```Cpp
 
 父类(base)数据可以被子类(derived)完全继承
@@ -191,26 +191,26 @@ pure virtual function
 	它, 且你对它没有默认定义
 ```
 
-##### 3种继承方式
-###### 1. public继承方式
+### 3种继承方式
+#### 1. public继承方式
 ```cpp
 基类中所有 public 成员在派生类中为 public 属性
 基类中所有 protected 成员在派生类中为 protected 属性
 基类中所有 private 成员在派生类中不能使用
 ```
-###### 2. protected继承方式
+#### 2. protected继承方式
 ```cpp
 基类中的所有 public 成员在派生类中为 protected 属性
 基类中的所有 protected 成员在派生类中为 protected 属性
 基类中的所有 private 成员在派生类中不能使用
 ```
-###### 3. private继承方式
+#### 3. private继承方式
 ```cpp
 基类中的所有 public 成员在派生类中均为 private 属性
 基类中的所有 protected 成员在派生类中均为 private 属性
 基类中的所有 private 成员在派生类中不能使用
 ```
-#### 4. 复合(composition): A has-a B (A拥有B)
+## 4. 复合(composition): A has-a B (A拥有B)
 
 ```Cpp{.line-numbers}
 class queue{
@@ -236,7 +236,7 @@ class queue{
 	container的析构函数先执行自己，然后再
 	调用component的析构函数。
 ```
-#### 5. 委托(delegation):	composition by reference 
+## 5. 委托(delegation):	composition by reference 
 	两者用指针相连, 两者生命不同步
 ```Cpp{.line-numbers}
 
@@ -247,7 +247,7 @@ class String{
 		StringRep* rep;	//rep指向的东西可以随着需求的改变而改变
 }
 ```
-#### 6. Inheritance+Composition
+## 6. Inheritance+Composition
 
 1.			
 		base 
@@ -270,7 +270,7 @@ class String{
 		析构函数调用次序：
 			先derived, 后base, 最后composition
 	
-#### 7. Delegation+Inheritance
+## 7. Delegation+Inheritance
 
 ```Cpp{.line-numbers}
 class A{
@@ -281,7 +281,7 @@ class B{
 }
 //B类可被继承, A中存数据
 ```
-#### 8. pointer-like classes: 智能指针
+## 8. pointer-like classes: 智能指针
 ```cpp{.line-numbers}
 template< class T>
 class shared_ptr{
@@ -301,7 +301,7 @@ private:
 };
 ```
 
-#### 9. function-like classes: 仿函数
+## 9. function-like classes: 仿函数
 ```cpp{.line-numbers}
 template < class T>
 struct identity {
@@ -323,11 +323,11 @@ struct select2nd {
 };
 ```
 
-#### 10. explicit
+## 10. explicit
 ```cpp
 用于接受一个以上实参的构造函数, 取消ctor的隐式调用
 ```
-#### 11. =default  /  =delete
+## 11. =default  /  =delete
 ```cpp
 如果自己定义了一个ctor/dtor那么编译器不会再给你一个default ctor/dtor
 如果你强制加上=default, 就可以重新获得并使用default ctor/dtor(可以在继承等时候使用)
@@ -378,7 +378,7 @@ class PrivateCopy{	//此class只能被friends和members copy
 };
 ```
 # 对象模型(Object Model)
-#### virtual pointer 和 virtual table
+## virtual pointer 和 virtual table
 ```Cpp
 类中如果有 virtual function, 则类大小为数据大小加一根指针的大小, 
 该指针为 virtual pointer
@@ -417,7 +417,7 @@ C可以调用：
 	C::function1()
 	A::function2()
 ```
-#### override
+## override
 ```cpp
 父类的虚函数子类如果要对其override则两者签名必须要完全相同
 子类对父类的虚函数复写可在函数名后面加上overrid告知编译器是对其的复写,
@@ -430,7 +430,7 @@ void function ( double ) {.....}
 void function( double) override {.....}
 编译器报错
 ```
-#### final
+## final
 ```cpp
 class finalClass final{
 	.....
@@ -451,13 +451,13 @@ finalFunction不能被子类复写
 函数返回值为函数中创造的本地变量、本地对象，则不能return by reference
 non-const 且有数据共享的 function要考虑Copy On Write(COW)
 ```
-#### 1.成员函数
+## 1.成员函数
 ```Cpp
 
 每一个成员函数都默认带一个隐藏的this参数
 (可能是第一个参数也可能是最后一个)
 ```
-#### 2.conversion function: 转换函数
+## 2.conversion function: 转换函数
 
 ```Cpp
 
@@ -467,7 +467,7 @@ operator Type() const{	//没有返回类型，编译器默认返回类型为Type
 一个类可以有多个转换函数, Type类型也不唯一,只要是之前出现过的Type就行
 ```
 
-#### 3.lambda
+## 3.lambda
 ```cpp
 一种inline function，可以被当作参数或本地变量, lambda的出现改变了
 cpp标准库的使用方式
@@ -593,14 +593,14 @@ function( t);	//使用value作为参数传递，不报错
 带有=的重载考虑对象被连续赋值, 要reference
 :: 、 . 、 .* 、 ? : 四个不能被重载
 ```
-#### 1. 对于<<等特殊操作符只能重载为非成员函数
+## 1. 对于<<等特殊操作符只能重载为非成员函数
 ```Cpp{ .line-numbers}	
 
 ostream& operator << ( ostream& os, const Type& t){
 	return os << .....;
 }
 ```
-#### 2. 对于自增自减操作符重载
+## 2. 对于自增自减操作符重载
 	好的后置++的写法是内部调用前置++
 	成员函数的写法：
 ```cpp{.line-numbers}
@@ -644,7 +644,7 @@ class template要说明使用的template类型
 
 泛化、specialization(特化)、partial specialization(偏特化)
 ```
-#### 1. partial specialization:
+## 1. partial specialization:
 1. 个数的偏特化
 ```cpp{.line-numbers}
 
@@ -671,7 +671,7 @@ class C<T*>{	//c2
 C<int> obj1;	//使用c1
 C<int> obj2;	//使用c2
 ```
-#### 2. variadic templates(数量不定的模板参数):
+## 2. variadic templates(数量不定的模板参数):
 	可以很方便的完成recursive function call(递归函数调用)
 ```cpp
 //记住...出现位置
@@ -754,7 +754,7 @@ public:
 	composited& tail(){ return m_tail; }
 };
 ```
-#### 3.alias template
+## 3.alias template
 ```cpp
 template< typename T>
 using vec = std::vector<T, myAlloc<T>>;
@@ -772,7 +772,7 @@ vec<int> myVec;
 typedef 不接受参数, 最多能写成
 typedef std::vector< int, myAlloc<int>> vec; 
 ```
-##### template template parameter 模板模板参数
+### template template parameter 模板模板参数
 ```cpp
 
 Type function( mytype1 a, mytype2 b){
@@ -865,14 +865,14 @@ for( decl : coll){	//ranged-base for, 尽量传引用
 }
 ```
 
-#### 1.uniform initialization
+## 1.uniform initialization
 ```cpp
 可以用统一的{}初始化, 当编译器看见{ t1, t2, t3, ..., tn}时, 会做出一个
 initializer_list<Type>，关联到一个array< Type, n>, 调用函数(eg:ctor)时
 该array内的元素被编译器分解逐一传给函数。若函数参数是个initializer_list<Type>,
 调用者不能给出数个Type参数然后以为他们会被自动转为一个initializer_list<Type>传入
 ```
-##### initializer_list<>
+### initializer_list<>
 ```cpp
 void function( std::initializer_list<Type> num){	//可接受任意个数的参数
 	for( auto a = num.begin(); a != num.end(); a++)
@@ -881,7 +881,7 @@ void function( std::initializer_list<Type> num){	//可接受任意个数的参�
 function( {.....});
 ```
 
-#### 2.Type Alias(类似typedef)
+## 2.Type Alias(类似typedef)
 ```cpp
 //两者等价
 typedef void ( *func)();
@@ -896,14 +896,14 @@ void (*function)()	//这是一个变量不能像函数一样定义
 	.....
 }
 ```
-#### 3.using的几种用法
+## 3.using的几种用法
 ```cpp
 1. using namespace std;	using std::cout; 等using namespace 和 namespace 的member
 2. using ClassName::MemberName;	//使用ClassName中的MemberName
 3. type alias 和 alias template
 ```
 
-#### 4.noexcept
+## 4.noexcept
 ```cpp
 Type function() noexcept;	//相当于Type function() noexcept(true);
 Type function() noexcept(条件a);	//在条件a为真下不会出现异常
@@ -911,7 +911,7 @@ Type function() noexcept(条件a);	//在条件a为真下不会出现异常
 异常一定要被处理, 如果不处理则一直向上抛出异常, 如果一直没被处理则调用std::terminate(),
 std::ternimate()调用std::abort(), abort()会结束整个程序
 ```
-#### 5.decltype
+## 5.decltype
 ```cpp
 decltype关键字可以让编译器找出表达式的type
 eg：
@@ -919,7 +919,7 @@ map< string, double> c;
 .....
 decltype(c)::value_type e;	//相当于 map<string, double>::value_type e;
 ```
-##### 用法1：声明一个return type
+### 用法1：声明一个return type
 ```cpp
 template< class type1, class type2>
 decltype ( x + y) add( type1 x, type2 y);	
@@ -928,7 +928,7 @@ decltype ( x + y) add( type1 x, type2 y);
 //正确写法：
 auto add( type1 x, type2 y) -> decltype ( x + y);
 ```
-##### 用法2：可用于template metaprogramming(模板元编程)
+### 用法2：可用于template metaprogramming(模板元编程)
 ```cpp
 template< typename T>
 void funtion( T obj){
@@ -940,12 +940,12 @@ void funtion( T obj){
 	iType elem3;
 }
 ```
-##### 用法3：传递lambda的类型
+### 用法3：传递lambda的类型
 ```cpp
 面对lambda, 我们手上往往只有对象, 类型常用auto又编译器推倒, 想要获得
 其type就需要借助decltype
 ```
-#### 6.mutable 
+## 6.mutable 
 ```cpp
 用来修饰类的数据成员, 而被 mutable 修饰的数据成员, 可以在 const 成员函数中修改
 
@@ -958,7 +958,7 @@ auto function = [=]() mutable {
 };
 
 ```
-#### 7.move
+## 7.move
 ```cpp
 可以解决unnecessary copying问题 和 做出perfect forwardding
 临时对象是一种Rvalue, Rvalue不能放在 = 左边
@@ -1038,7 +1038,7 @@ public:
 
 };
 ```
-#### 8. tuple
+## 8. tuple
 ```cpp
 tuple的做法是递归的继承
 
@@ -1051,7 +1051,7 @@ tuple_element<1, TypleType>::tupe element1 = 3;
 	//相当于：type1 element = 3;
 
 ```
-#### 9. 预处理
+## 9. 预处理
 ```cpp
 #if 整型常量表达式1
     程序段1
@@ -1079,8 +1079,8 @@ tuple_element<1, TypleType>::tupe element1 = 3;
 #endif
 //如果宏名没有被定义过，则执行程序段1
 ``` 
-#### 10.一些type_traits中的模板
-##### remove_all_extents
+## 10.一些type_traits中的模板
+### remove_all_extents
 如果 T 是某种类型 X 的多维数组，则提供 X 的成员 的类型，否则类型为 T。
 不能对remove_all_extents进行特化
 ```
@@ -1133,21 +1133,54 @@ int main()
     return 0;
 }
 ```
-##### is_destructible
+### is_destructible
 ```cpp
 template< class T >
 struct is_destructible;
+
 如果 T 是reference type，则提供等于true的成员常量值。
 若 T 是const或volatile(包含void)或函数类型,则提供等于false的成员常量值。
-若 T 是对象类型，则对于等于 std::remove_all_extents<T>::type 的
-类型 U ，若表达式 std::declval<U&>().~U() 在不求值语境合法，则value 
-等于 true 。否则，value 等于 false 。
+若 T 是对象类型，令U=std::remove_all_extents<T>::type，
+若表达式 std::declval<std::remove_all_extents<T>::type&>().~U()
+在unevaluated context中合法，则value等于true，否则value为false 。
+	declval<T>:将任何类型 T 转换为引用类型，从而可以在decltype 
+	中使用成员函数，而无需通过构造函数。
 ```
-##### is_trivially_destructible
 ```cpp
-
+用法：
+template <template _TP>
+std::is_destructible<_TP>{}	//true或false
 ```
-##### is_nothrow_destructible
+### is_trivially_destructible
 ```cpp
-
+template< class T >
+struct is_trivially_destructible;
+和is_destructible一样，另加了std::remove_all_extents<T>::type
+是non-class类型或带有trivial dtor的class类型
+```
+```cpp
+用法：
+template <template _TP>
+std::is_trivially_destructible<_TP>{}	//true或false
+```
+#### trivial destructor
+```cpp
+trivial dtor是不执行任何操作的dtor，有trival dtor的对象不需要
+delete-expression，可以通过简单地解除分配它们的存储来处理。所有c
+兼容的数据类型(POD)都可以简单delete
+	POD:Plain Old Data 一种 C++ 类型，它在 C 中具有等效项，并且
+	使用与 C 相同的规则来进行初始化、复制、布局和寻址。没有ctor，
+	dtor，virtual member function
+	eg:struct Fred x; 不初始化 Fred 变量 x 的成员。
+满足以下几个条件：
+1.析构函数不是用户提供的(要么被隐式声明，要么在其第一个声明中被显
+式定义为默认值)
+2.析构函数不是虚函数(即基类析构函数不是虚函数)
+3.所有direct base class 都有 trivial destructor
+	direct base class 在其派生类的声明中直接作为基说明符出现的基类
+4.所有class type的non-static member或array都有trivial destructors
+```
+### is_nothrow_destructible
+```cpp
+和is_destructible一样，不过dtor是noexcept
 ```
