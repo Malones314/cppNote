@@ -542,51 +542,6 @@ f();	//2
 cout << id;	//1
 ```
 
-# reference(实质上就是指针)
-```Cpp
-
-使用reference传递参数，传递者无需知道接收者是以reference形式接受
-很少直接声明一个变量类型是reference, 常用于参数类型和返回类型的描述
-
-//两者无法并存, 被视为same signature(签名)
-Type function(const Type a){	..... }
-Type function(const Type& a){ ..... }
-//但是如果一个函数在) 加上了const则可以并存, const也被视为签名的一部分
-
-reference设初始值之后再也不能改变代表别的变量
-
-Type& r = x;	//r代表了x, r的大小和x的大小一样
-Type xx = a;
-r = a;		//把a赋值给r, 现在r和x都等于a
-
-注：
-	1.x的地址在哪r的地址就在哪
-	2.sizeof(X) == sizeof(r)
-
-Java里所有变量都是reference
-```
-
-
-```Cpp{.class1 .class .line-numbers}
-//eg1:
-Type& function( Type* t ){
-	.....
-	return *t;	//返回指针指向的内容，不报错
-}
-```
-```Cpp{.class2 .class .line-numbers}
-//eg2:
-void function( Type&t ){
-	.....
-}
-Type t;
-function( t);	//使用value作为参数传递，不报错
-```
-```Cpp
-
-两个例子不报错的原因都是因为: 传递者(使用者)无需关注
-参数是否以reference的形式实现传递
-```
 # 操作符重载
 ```Cpp
 
@@ -817,6 +772,107 @@ class stack{
 };
 stack<int>s1;
 stack<int, list<int>> s2;
+```
+# smart pointers
+```cpp
+#include<memory>
+用于帮助确保程序没有内存和资源泄漏，并且是异常安全的。
+
+确保资源获取在对象初始化的同时发生，以便在一行代码中创建并准备好对象的所有资源。
+smart pointers对于 RAII 或资源获取即初始化编程至关重要。
+			RAII:Object lifetime and resource management资源获取即初始化
+原始指针仅用于有限范围的小代码块、循环或辅助函数
+
+智能指针在生命结束时自动delete，智能指针是在堆栈上声明的类模板，并使用指向堆分
+配对象的原始指针进行初始化。智能指针负责删除原始指针指定的内存。智能指针析构函数
+包含对 delete 的调用，并且因为智能指针是在堆栈上声明的，所以当智能指针超出范围
+时会调用其析构函数，即使在堆栈更远的地方抛出异常也是如此。
+
+智能指针类重载 -> 和 * 运算符以返回封装的原始指针，智能指针有自己的成员函数，可
+使用.来访问
+
+不支持指针算法，只支持move赋值（禁用复制赋值）。
+
+```
+```cpp
+使用步骤：
+	1.将smart point声明为局部变量，不要在智能指针身上使用new malloc
+	2.在type参数中指定封装指针的指向类型
+	3.将原始指针传递给智能指针构造函数中的新对象
+	4.使用重载的 -> 和 * 运算符访问对象
+	5.让smart point删除对象
+```
+## 一个deleter的设计
+```cpp
+class state_deleter {  // a deleter class with state
+  int count_;
+public:
+  state_deleter() : count_(0) {}
+  template <class T>
+  void operator()(T* p) {
+    std::cout << "[deleted #" << ++count_ << "]\n";
+    delete p;
+  }
+};
+```
+## 常用成员函数
+```cpp
+unique_ptr<type> ut1;	//使用默认的deleter
+unique_ptr<type> ut2;	//使用默认的deleter
+unique_ptr<type, deleter> ut3;	//使用自己设计的deleter
+type* t
+
+pointer get() const noexcept;
+返回原始指针 
+t = ut1.get();
+
+explicit operator bool() const noexcept;
+返回是否为空	
+if(ut1)	..... 	//判断ut1是否是空
+
+release(): 返回其值并将其替换为空指针来释放其存储指针的所有权，此调用不会销毁原
+始指针，=左边的对象还需要释放内存  
+t = ut1.release() ut1中的原始指针变为空指针，值返回赋值给t，t还需要重新delete
+
+void reset (pointer p = pointer()) noexcept;
+销毁当前由 unique_ptr（如果有）管理的对象并取得 p 的所有权
+ut1.reset( new type (value));	//ut1的原始指针为value
+ut1.reset();	//销毁ut1的原始指针
+
+deleter_type& get_deleter() noexcept;
+const deleter_type& get_deleter() const noexcept;
+返回存储的deleter
+ut3.get_deleter();	//得到ut3的deleter
+
+template <class charT, class traits, class T>  
+basic_ostream<charT,traits>& operator<< ( 
+	basic_ostream<charT,traits>& os, const shared_ptr<T>& x );
+重载<<操作符，让smart pointer能像普通指针一样输入输出
+cout << *ut1 << endl;
+```
+
+## shared_ptr
+```cpp
+使用引用计数实现对同一块内存的多个引用,在最后一个引用被释放时,指向的内存才释放。
+
+```
+## unique_ptr
+```cpp
+own their pointer uniquely对于同一块内存只能有一个持有者
+
+unique_ptr 中唯一的数据成员是原始指针，这让unique_ptr和原始指针一样大，使用重
+载 * 和 -> 运算符的智能指针访问封装指针并不比直接访问原始指针慢很多。
+
+在以下两个情况下unique_ptr指向的对象消亡
+1.unique_ptr 对象被销毁( 生命周期结束)
+2.unique_ptr 对象通过 operator= 或 reset() 分配另一个指针
+```
+```cpp
+std::unique_ptr<int> foo;
+std::unique_ptr<int> bar;
+foo = std::unique_ptr<int>(new int (101));  // rvalue
+bar = std::move(foo); // using std::move, foo已经失效，以后不能使用foo
+ //bar = foo; //error unique_ptr不允许赋值操作不能放在等号的左边(函数的参数和返回值例外)
 ```
 # 杂记
 ```Cpp
@@ -1249,5 +1305,78 @@ lvalue或xvalue.
 纯右值，不是 xvalue 的右值，没有程序可以访问的地址，包括文字、返回非引用类型的
 函数调用，以及在表达式求值期间创建但只能由编译器访问的临时对象。
 ```
+## 13.reference
+```Cpp
 
-## 内存泄漏
+使用reference传递参数，传递者无需知道接收者是以reference形式接受
+很少直接声明一个变量类型是reference, 常用于参数类型和返回类型的描述
+
+//两者无法并存, 被视为same signature(签名)
+Type function(const Type a){	..... }
+Type function(const Type& a){ ..... }
+//但是如果一个函数在) 加上了const则可以并存, const也被视为签名的一部分
+
+reference设初始值之后再也不能改变代表别的变量
+
+Type& r = x;	//r代表了x, r的大小和x的大小一样
+Type xx = a;
+r = a;		//把a赋值给r, 现在r和x都等于a
+
+注：
+	1.x的地址在哪r的地址就在哪
+	2.sizeof(X) == sizeof(r)
+
+Java里所有变量都是reference
+```
+
+
+```Cpp{.class1 .class .line-numbers}
+//eg1:
+Type& function( Type* t ){
+	.....
+	return *t;	//返回指针指向的内容，不报错
+}
+```
+```Cpp{.class2 .class .line-numbers}
+//eg2:
+void function( Type&t ){
+	.....
+}
+Type t;
+function( t);	//使用value作为参数传递，不报错
+```
+```Cpp
+
+两个例子不报错的原因都是因为: 传递者(使用者)无需关注
+参数是否以reference的形式实现传递
+```
+## 14.内存泄漏
+```cpp
+程序未能释放掉不再使⽤的内存的情况,失去了对该段内存的控制,因⽽造成了内存的浪费。
+进程突出前，其他程序无法使用泄漏的内存。
+```
+### 内存泄漏分类
+#### heap leak
+```cpp
+malloc、new等从堆中分配的一块内存，用完后没有free、delete，导致堆中的这部分内
+存不能再被使用，导致heap leak
+```
+#### resource leak
+```cpp
+主要指程序使⽤系统分配的资源⽐如 Bitmap,handle ,SOCKET 等没有使⽤相应的函数释
+放掉，导致系统资源的浪费，可导致系统效能降低，系统运⾏不稳定
+```
+
+#### 没有将基类的dtor定义为虚函数
+```cpp
+当基类指针指向⼦类对象时，如果基类的析构函数不是 virtual，那么⼦类的析构函数将
+不会被调⽤，⼦类的资源没有正确是释放，因此造成内存泄露
+```
+```cpp
+指针的指向改变，分配的内存没有释放，都可能造成内存泄漏。
+
+通过将内存的分配封装再类中，ctor分配内存，dtor释放内存；使用智能指针，可以避免
+内存泄漏。
+
+
+```
