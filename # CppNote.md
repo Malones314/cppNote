@@ -854,7 +854,70 @@ cout << *ut1 << endl;
 ## shared_ptr
 ```cpp
 使用引用计数实现对同一块内存的多个引用,在最后一个引用被释放时,指向的内存才释放。
+注:
+	1.不要用同一个原始指针初始化多个 shared_ptr，会造成二次销毁。
+	2.禁止使用指向 shared_ptr 的指针,使用 shared_ptr 的指针指向一 shared_ptr
+	  时，引用计数并不会加一，操作 shared_ptr 的指针很容易就发生野指针异常。
+	3.避免循环引用造成内存泄漏
 
+对于可能大量复制赋值的对象，因为shared_ptr让同一块内存被多个引用，而非复制内存
+到另一块内存
+```
+```cpp
+循环引用造成的内存泄漏
+struct A;
+struct B{
+    shared_ptr<A> a_;
+};
+struct A{
+    shared_ptr<B> b_;
+};
+
+int main(){
+    auto b = make_shared<B>();
+    auto a = make_shared<A>();
+
+    b->a_ = a;
+    a->b_ = b;
+		//此时a，b的引用计数都是2
+    return 0;
+} //此时a，b的引用计数各减1，都为1，这两个对象都不会被销毁，从而发生内存泄露。
+```
+
+## weak_ptr
+```cpp
+为避免循环引用导致的内存泄露，就需要使用 weak_ptr, weak_ptr 不持有对象，所以不
+能通过 weak_ptr 去访问对象的成员
+weak_ptr在使用的时候检查一下指针的有效性，可以应用于可能失效的场景
+```
+```cpp
+只要把AB其中一个shared_ptr改成weak_ptr就能避免内存泄漏
+struct A;
+struct B{
+    shared_ptr<A> a_;
+};
+struct A{
+    weak_ptr<B> b_;
+};
+
+int main(){
+    auto b = make_shared<B>();
+    auto a = make_shared<A>();
+
+    b->a_ = a;
+    a->b_ = b;
+		//此时a的引用计数是2，b的引用计数器为1
+    return 0;
+} //此时a,b的引用计数各减1，b的引用计数器为0，让A析构
+```
+```cpp
+struct A{
+    int a = 0;
+};
+
+auto ms = make_shared<A>();
+weak_ptr<A> wp(ms);
+cout << wp->a << endl;   // error
 ```
 ## unique_ptr
 ```cpp
