@@ -849,11 +849,23 @@ basic_ostream<charT,traits>& operator<< (
 	basic_ostream<charT,traits>& os, const shared_ptr<T>& x );
 重载<<操作符，让smart pointer能像普通指针一样输入输出
 cout << *ut1 << endl;
+
+bool expired() const noexcept
+等同于use_count() == 0，dtor可能还没被调用，但对该对象的析构即将发生。
+若原始指针已经被delete则返回true，否则false
+
+shared_ptr<T> lock() const noexcept
+获取共享资源所有权的 shared_ptr
+如果原始指针已过期，则成员函数返回一个空的 shared_ptr 对象；否则它返回一个拥有
+原始指针指向的资源的 shared_ptr<T> 对象。
 ```
 
 ## shared_ptr
 ```cpp
-使用引用计数实现对同一块内存的多个引用,在最后一个引用被释放时,指向的内存才释放。
+除了存储的原始指针以外，还有一个指针指向控制块，控制块有一个引用计数器，用于存储
+指向同一内存的共享指针的数量，在最后一个引用被释放时,指向的内存才释放。在创造包
+含很多指针的vector时考虑用unique_ptr
+creat、delete、reset一个shared_ptr时,更新计数器，检测是否是第一个/最后一个指针
 注:
 	1.不要用同一个原始指针初始化多个 shared_ptr，会造成二次销毁。
 	2.禁止使用指向 shared_ptr 的指针,使用 shared_ptr 的指针指向一 shared_ptr
@@ -861,7 +873,7 @@ cout << *ut1 << endl;
 	3.避免循环引用造成内存泄漏
 
 对于可能大量复制赋值的对象，因为shared_ptr让同一块内存被多个引用，而非复制内存
-到另一块内存
+到另一块内存。
 ```
 ```cpp
 循环引用造成的内存泄漏
@@ -889,6 +901,7 @@ int main(){
 为避免循环引用导致的内存泄露，就需要使用 weak_ptr, weak_ptr 不持有对象，所以不
 能通过 weak_ptr 去访问对象的成员
 weak_ptr在使用的时候检查一下指针的有效性，可以应用于可能失效的场景
+不能单独使用weak_ptr，要和share_ptr搭配使用
 ```
 ```cpp
 只要把AB其中一个shared_ptr改成weak_ptr就能避免内存泄漏
@@ -922,9 +935,11 @@ cout << wp->a << endl;   // error
 ## unique_ptr
 ```cpp
 own their pointer uniquely对于同一块内存只能有一个持有者
+可以安全替代原始指针
 
 unique_ptr 中唯一的数据成员是原始指针，这让unique_ptr和原始指针一样大，使用重
 载 * 和 -> 运算符的智能指针访问封装指针并不比直接访问原始指针慢很多。
+不能使用=来转移对象所有权，要使用move
 
 在以下两个情况下unique_ptr指向的对象消亡
 1.unique_ptr 对象被销毁( 生命周期结束)
@@ -936,6 +951,15 @@ std::unique_ptr<int> bar;
 foo = std::unique_ptr<int>(new int (101));  // rvalue
 bar = std::move(foo); // using std::move, foo已经失效，以后不能使用foo
  //bar = foo; //error unique_ptr不允许赋值操作不能放在等号的左边(函数的参数和返回值例外)
+```
+```cpp
+auto spi = make_unique<int>(10);
+auto upi = make_unique<int> ( 20);
+std::cout << "upi:" << upi.get() << std::endl;	//upi:0x1d1668
+std::cout << "spi:" << spi.get() << std::endl;	//spi:0x1d1658
+swap( upi, spi);
+std::cout << "upi:" << upi.get() << std::endl;	//upi:0x1d1658
+std::cout << "spi:" << spi.get() << std::endl;	//spi:0x1d1668
 ```
 # 杂记
 ```Cpp
