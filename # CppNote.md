@@ -1450,6 +1450,13 @@ heap从低地址往高地址增长，stack从高地址往低地址增长，两�
 有时Data section、bss和heap统称为“数据段”， 它的末尾由一个名为 program break 
 或 brk 的指针划定。 brk pointer指向heap的末尾。
 
+Linux中可通过sbrk()系统调用来操作程序中段
+调用 sbrk(0) 给出程序中断的当前地址。
+使用正值调用 sbrk(x) 会将 brk 递增 x 字节，从而分配内存。
+使用负值调用 sbrk(-x) 会使 brk 减少 x 字节，从而释放内存。
+失败时，sbrk() 返回 (void*) -1
+sbrk() 并不是真正的线程安全。它只能按照后进先出的顺序增长或收缩。这与heap的增长
+收缩方式相同，glibc依旧使用sbrk()分配不太大的内存。
 
 ```
 
