@@ -58,9 +58,8 @@ eg: 唤起base classes、non-static members的ctors和dtors
 
 ```
 
-## 1. 拷贝赋值的重载
+## 拷贝赋值的重载
 ```Cpp
-
 需要检测自我赋值, 好处：
 	1.速度快, 效率高, 防止不必要的动作
 	2.防止a = a的出错, 下例的高亮行如果没有自我赋值检测, 则a = a会出错
@@ -77,8 +76,7 @@ classname& operator=( classname& a){	//因为可能连续赋值, 所以返回类
 	return *this;
 }
 ```
-
-## 2. new / delete
+## new / delete
 ```cpp
 new 表示在堆上分配内存的请求，如果有足够的可用内存，new 运算符会初始化内存
 并将新分配和初始化的内存的地址返回给指针变量。
@@ -144,7 +142,24 @@ Type* a = ::new Type;	//强制调用global operator new
 ::delete a;		//强制调用global operator delete
 
 ```
-## 3. 继承(inheritance): A is-a B (A是一种B)
+## 多态
+```cpp
+C++中的多态性有两种形式：
+静态多态性（Static Polymorphism）和动态多态性（Dynamic Polymorphism）。
+
+静态多态性是通过C++的函数重载（Function Overloading）和运算符重载（Operator 
+Overloading）实现的。在编译时，编译器会根据参数类型或运算符的操作数类型来决定使
+用哪个函数或运算符重载。
+
+动态多态性是通过C++的虚函数（Virtual Function）实现的。虚函数允许派生类重写基
+类的函数，当通过基类指针或引用调用虚函数时，实际调用的是派生类的函数。
+```
+### 抽象类
+```cpp
+当您尝试创建抽象类的实例时，会出现错误。抽象类是至少有一个纯虚函数的类，这意味着
+它不能被直接实例化。要修复此错误，需要创建一个继承自抽象类的具体类的实例
+```
+## 继承(inheritance): A is-a B (A是一种B)
 ```Cpp
 
 父类(base)数据可以被子类(derived)完全继承
@@ -210,7 +225,7 @@ pure virtual function
 基类中的所有 protected 成员在派生类中均为 private 属性
 基类中的所有 private 成员在派生类中不能使用
 ```
-## 4. 复合(composition): A has-a B (A拥有B)
+## 复合(composition): A has-a B (A拥有B)
 
 ```Cpp{.line-numbers}
 class queue{
@@ -236,7 +251,7 @@ class queue{
 	container的析构函数先执行自己，然后再
 	调用component的析构函数。
 ```
-## 5. 委托(delegation):	composition by reference 
+## 委托(delegation):	composition by reference 
 	两者用指针相连, 两者生命不同步
 ```Cpp{.line-numbers}
 
@@ -247,7 +262,7 @@ class String{
 		StringRep* rep;	//rep指向的东西可以随着需求的改变而改变
 }
 ```
-## 6. Inheritance+Composition
+## Inheritance+Composition
 
 1.			
 		base 
@@ -270,7 +285,7 @@ class String{
 		析构函数调用次序：
 			先derived, 后base, 最后composition
 	
-## 7. Delegation+Inheritance
+## Delegation+Inheritance
 
 ```Cpp{.line-numbers}
 class A{
@@ -281,7 +296,7 @@ class B{
 }
 //B类可被继承, A中存数据
 ```
-## 8. pointer-like classes: 智能指针
+## pointer-like classes: 智能指针
 ```cpp{.line-numbers}
 template< class T>
 class shared_ptr{
@@ -301,7 +316,7 @@ private:
 };
 ```
 
-## 9. function-like classes: 仿函数
+## function-like classes: 仿函数
 ```cpp{.line-numbers}
 template < class T>
 struct identity {
@@ -323,11 +338,11 @@ struct select2nd {
 };
 ```
 
-## 10. explicit
+## explicit
 ```cpp
 用于接受一个以上实参的构造函数, 取消ctor的隐式调用
 ```
-## 11. =default  /  =delete
+## =default  /  =delete
 ```cpp
 如果自己定义了一个ctor/dtor那么编译器不会再给你一个default ctor/dtor
 如果你强制加上=default, 就可以重新获得并使用default ctor/dtor(可以在继承等时候使用)
@@ -451,13 +466,13 @@ finalFunction不能被子类复写
 函数返回值为函数中创造的本地变量、本地对象，则不能return by reference
 non-const 且有数据共享的 function要考虑Copy On Write(COW)
 ```
-## 1.成员函数
+## 成员函数
 ```Cpp
 
 每一个成员函数都默认带一个隐藏的this参数
 (可能是第一个参数也可能是最后一个)
 ```
-## 2.conversion function: 转换函数
+## conversion function: 转换函数
 
 ```Cpp
 
@@ -467,7 +482,7 @@ operator Type() const{	//没有返回类型，编译器默认返回类型为Type
 一个类可以有多个转换函数, Type类型也不唯一,只要是之前出现过的Type就行
 ```
 
-## 3.lambda
+## lambda
 ```cpp
 一种inline function，可以被当作参数或本地变量, lambda的出现改变了
 cpp标准库的使用方式
@@ -548,14 +563,14 @@ cout << id;	//1
 带有=的重载考虑对象被连续赋值, 要reference
 :: 、 . 、 .* 、 ? : 四个不能被重载
 ```
-## 1. 对于<<等特殊操作符只能重载为非成员函数
+## 对于<<等特殊操作符只能重载为非成员函数
 ```Cpp{ .line-numbers}	
 
 ostream& operator << ( ostream& os, const Type& t){
 	return os << .....;
 }
 ```
-## 2. 对于自增自减操作符重载
+## 对于自增自减操作符重载
 	好的后置++的写法是内部调用前置++
 	成员函数的写法：
 ```cpp{.line-numbers}
@@ -599,7 +614,7 @@ class template要说明使用的template类型
 
 泛化、specialization(特化)、partial specialization(偏特化)
 ```
-## 1. partial specialization:
+## partial specialization:
 1. 个数的偏特化
 ```cpp{.line-numbers}
 
@@ -626,7 +641,7 @@ class C<T*>{	//c2
 C<int> obj1;	//使用c1
 C<int> obj2;	//使用c2
 ```
-## 2. variadic templates(数量不定的模板参数):
+## variadic templates(数量不定的模板参数):
 	可以很方便的完成recursive function call(递归函数调用)
 ```cpp
 //记住...出现位置
@@ -709,7 +724,7 @@ public:
 	composited& tail(){ return m_tail; }
 };
 ```
-## 3.alias template
+## alias template
 ```cpp
 template< typename T>
 using vec = std::vector<T, myAlloc<T>>;
@@ -876,6 +891,19 @@ creat、delete、reset一个shared_ptr时,更新计数器，检测是否是第�
 到另一块内存。
 ```
 ```cpp
+std::shared_ptr的示例
+
+std::shared_ptr<int> ptr1(new int(10)); //创建一个智能指针ptr1
+std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //1
+{
+    std::shared_ptr<int> ptr2 = ptr1; //创建另一个智能指针ptr2并指向ptr1所指向的内存
+    std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //2
+    std::cout << "ptr2的引用计数：" << ptr2.use_count() << std::endl; //2
+} //ptr2的生命周期结束，所管理的内存块引用计数减1
+std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //1
+
+```
+```cpp
 循环引用造成的内存泄漏
 struct A;
 struct B{
@@ -902,6 +930,32 @@ int main(){
 能通过 weak_ptr 去访问对象的成员
 weak_ptr在使用的时候检查一下指针的有效性，可以应用于可能失效的场景
 不能单独使用weak_ptr，要和share_ptr搭配使用
+是一种弱引用，它不会增加所管理对象的引用计数，也不会影响对象的生命周期，因此不会
+导致循环引用。
+```
+```cpp
+// 创建一个shared_ptr指向动态分配的int类型内存
+std::shared_ptr<int> ptr(new int(10));
+
+// 创建一个weak_ptr指向与ptr共享的内存
+std::weak_ptr<int> weak_ptr(ptr);
+
+// 判断weak_ptr是否过期
+if (weak_ptr.expired()) {
+		std::cout << "weak_ptr已过期" << std::endl;
+} else {
+		std::cout << "weak_ptr未过期" << std::endl;
+}
+
+// 通过weak_ptr创建一个shared_ptr对象
+std::shared_ptr<int> ptr2 = weak_ptr.lock();
+
+// 判断weak_ptr是否过期
+if (weak_ptr.expired()) {
+		std::cout << "weak_ptr已过期" << std::endl;
+} else {
+		std::cout << "weak_ptr未过期" << std::endl;
+}
 ```
 ```cpp
 只要把AB其中一个shared_ptr改成weak_ptr就能避免内存泄漏
@@ -919,9 +973,9 @@ int main(){
 
     b->a_ = a;
     a->b_ = b;
-		//此时a的引用计数是2，b的引用计数器为1
+		//此时a的引用计数是2, b的引用计数器为1
     return 0;
-} //此时a,b的引用计数各减1，b的引用计数器为0，让A析构
+} //此时a, b的引用计数各减1, b的引用计数器为0, 让A析构
 ```
 ```cpp
 struct A{
@@ -934,16 +988,22 @@ cout << wp->a << endl;   // error
 ```
 ## unique_ptr
 ```cpp
-own their pointer uniquely对于同一块内存只能有一个持有者
+own their pointer uniquely独占式的智能指针
 可以安全替代原始指针
 
-unique_ptr 中唯一的数据成员是原始指针，这让unique_ptr和原始指针一样大，使用重
+当std::unique_ptr被销毁时，它所管理的对象也会被自动释放。
+
+unique_ptr 中唯一的数据成员是原始指针, 这让unique_ptr和原始指针一样大, 使用重
 载 * 和 -> 运算符的智能指针访问封装指针并不比直接访问原始指针慢很多。
 不能使用=来转移对象所有权，要使用move
 
 在以下两个情况下unique_ptr指向的对象消亡
 1.unique_ptr 对象被销毁( 生命周期结束)
 2.unique_ptr 对象通过 operator= 或 reset() 分配另一个指针
+```
+```cpp
+由于std::unique_ptr是独占式的智能指针，不能直接将一个std::unique_ptr对象赋值给
+另一个std::unique_ptr对象，需要使用std::move函数进行转移所有权
 ```
 ```cpp
 std::unique_ptr<int> foo;
@@ -1008,8 +1068,24 @@ for( decl : coll){	//ranged-base for, 尽量传引用
 	.....
 }
 ```
-
-## 1.uniform initialization
+ 
+## inline 和 define 的区别
+```cpp
+#define是一个预处理指令，它在编译之前将文本替换为指定的值。#define的主要目的是
+为了方便地定义常量或函数宏，从而避免在程序中多次出现相同的值或代码。
+```
+```cpp
+inline关键字用于在编译时将函数代码插入到函数调用点处。当函数被声明为inline时，
+编译器会尝试将函数调用转换为直接在调用点处执行函数的代码。这样可以减少函数调用的
+开销，并提高程序的执行效率。
+```
+```cpp
+#define和inline都可以用于代码优化，但它们的实现方式和语法不同。#define是一个预
+处理指令，只能用于常量或函数宏的定义，而inline是一个函数关键字，用于将函数代码
+插入到函数调用点处。另外，inline通常应该用于较小的函数，而较大的函数应该使用普
+通函数调用，因为将大函数声明为inline可能会导致代码膨胀和性能下降。
+```
+## uniform initialization
 ```cpp
 可以用统一的{}初始化, 当编译器看见{ t1, t2, t3, ..., tn}时, 会做出一个
 initializer_list<Type>，关联到一个array< Type, n>, 调用函数(eg:ctor)时
@@ -1025,7 +1101,7 @@ void function( std::initializer_list<Type> num){	//可接受任意个数的参�
 function( {.....});
 ```
 
-## 2.Type Alias(类似typedef)
+## Type Alias(类似typedef)
 ```cpp
 //两者等价
 typedef void ( *func)();
@@ -1040,14 +1116,14 @@ void (*function)()	//这是一个变量不能像函数一样定义
 	.....
 }
 ```
-## 3.using的几种用法
+## using的几种用法
 ```cpp
 1. using namespace std;	using std::cout; 等using namespace 和 namespace 的member
 2. using ClassName::MemberName;	//使用ClassName中的MemberName
 3. type alias 和 alias template
 ```
 
-## 4.noexcept
+## noexcept
 ```cpp
 Type function() noexcept;	//相当于Type function() noexcept(true);
 Type function() noexcept(条件a);	//在条件a为真下不会出现异常
@@ -1055,7 +1131,7 @@ Type function() noexcept(条件a);	//在条件a为真下不会出现异常
 异常一定要被处理, 如果不处理则一直向上抛出异常, 如果一直没被处理则调用std::terminate(),
 std::ternimate()调用std::abort(), abort()会结束整个程序
 ```
-## 5.decltype
+## decltype
 ```cpp
 decltype关键字可以让编译器找出表达式的type
 eg：
@@ -1089,9 +1165,39 @@ void funtion( T obj){
 面对lambda, 我们手上往往只有对象, 类型常用auto又编译器推倒, 想要获得
 其type就需要借助decltype
 ```
-## 6.mutable 
+## mutable 
 ```cpp
 用来修饰类的数据成员, 而被 mutable 修饰的数据成员, 可以在 const 成员函数中修改
+
+该变量可以在常量对象中被修改，即使该对象被声明为常量
+
+如果类的成员变量被声明为mutable，则可以在任何情况下更改该变量的值，即使在常量对
+象上也是如此。
+
+```
+```cpp
+class MyClass {
+public:
+    void setValue(int value) const {
+        m_value = value; // 在常量对象中修改mutable变量
+    }
+
+    int getValue() const {
+        return m_value;
+    }
+
+private:
+    mutable int m_value; // mutable成员变量
+};
+
+int main() {
+    const MyClass obj;
+    obj.setValue(42); // 仍然可以修改m_value的值
+    std::cout << obj.getValue(); // 输出：42
+    return 0;
+}
+```
+```cpp
 
 用于lambda表达式, 可以修改按值捕获的方式中的变量
 auto function = [=]() {	// error
@@ -1102,7 +1208,30 @@ auto function = [=]() mutable {
 };
 
 ```
-## 7.move
+## volatile
+```cpp
+修饰变量声明，表示该变量的值可能会在程序的控制范围之外发生变化，因此编译器不会对
+该变量进行优化。因为编译器无法确定该变量何时会被修改。
+
+通常用于访问硬件寄存器或多线程共享变量。
+```
+```cpp
+volatile int count = 0; // 声明一个volatile变量
+
+void increment() {
+    ++count; // 对volatile变量进行操作
+}
+
+int main() {
+    while (count < 10) {
+        increment();
+    }
+    std::cout << "Count: " << count << std::endl;
+    return 0;
+}
+
+```
+## move
 ```cpp
 可以解决unnecessary copying问题 和 做出perfect forwardding
 临时对象是一种Rvalue, Rvalue不能放在 = 左边
@@ -1182,7 +1311,7 @@ public:
 
 };
 ```
-## 8. tuple
+## tuple
 ```cpp
 tuple的做法是递归的继承
 
@@ -1195,7 +1324,7 @@ tuple_element<1, TypleType>::tupe element1 = 3;
 	//相当于：type1 element = 3;
 
 ```
-## 9. 预处理
+## 预处理
 ```cpp
 #if 整型常量表达式1
     程序段1
@@ -1223,7 +1352,7 @@ tuple_element<1, TypleType>::tupe element1 = 3;
 #endif
 //如果宏名没有被定义过，则执行程序段1
 ``` 
-## 10.一些type_traits中的模板
+## 一些type_traits中的模板
 ### remove_all_extents
 如果 T 是某种类型 X 的多维数组，则提供 X 的成员 的类型，否则类型为 T。
 不能对remove_all_extents进行特化
@@ -1300,7 +1429,7 @@ std::is_destructible<_TP>{}	//true或false
 template< class T >
 struct is_trivially_destructible;
 和is_destructible一样，另加了std::remove_all_extents<T>::type
-是non-class类型或带有trivial dtor的class类型
+是non-class类型或带有trivial dtor的class类型(隐式定义的析构函数)
 ```
 ```cpp
 用法：
@@ -1329,7 +1458,7 @@ delete-expression，可以通过简单地解除分配它们的存储来处理。
 和is_destructible一样，不过dtor是noexcept
 ```
 
-## 11.强制类型转换
+## 强制类型转换
 
 ### static_cast
 ```Cpp
@@ -1341,6 +1470,14 @@ static_cast<Type>(value);
 	没有运行时检查来保证转换的安全性
 	把派生类转换成基类(上行转换)是安全的
 	把基类转换成派生类(下行转换)是不安全的，因为没有动态类型检查
+
+不安全的情况：
+1.当将一个指向基类的指针或引用转换为指向派生类的指针或引用时，如果实际对象的类型
+不是所转换的类型。
+
+2.当将浮点数转换为整数时，如果浮点数的值大于目标类型的最大值或小于最小值。
+
+3.当将指针或引用转换为其他类型时，如果指针或引用指向的对象被销毁或被释放。
 ```
 ### dynamic_cast
 ```Cpp
@@ -1354,21 +1491,37 @@ reference，转换失败抛出与 std::bad_cast 类型的处理程序相匹配�
 ### reinterpret_cast
 ```cpp
 可以将整型转换为指针，也可以把指针转换为数组；可以在指针和引⽤⾥进⾏肆⽆忌惮的转
-换，平台移植性比较差。
-```
+换，平台移植性比较差。将一个指针或引用的值解释为另一个类型的指针或引用，或将一个
+对象的二进制表示解释为另一种类型的对象。
 
+用于将一个指针或引用转换为另一种类型的指针或引用，即使它们的类型之间没有任何关
+系。它也可以将一个整数值转换为指针类型或将一个指针类型转换为整数值。
+reinterpret_cast 转换是非常危险的，因为它没有执行类型检查和转换操作，只是将二进
+制数据解释为不同的类型。这种类型转换通常只在必要的时候才应该使用，并且需要谨慎使
+用，以避免潜在的错误和安全问题。
+```
+```cpp
+char* ptr = new char[10];
+int* intptr = reinterpret_cast<int*>(ptr);
+在这个示例中，char* 类型的指针 ptr 被转换为 int* 类型的指针 intptr。这种转换非
+常危险，因为 char* 和 int* 类型之间没有任何关系，而且它们的大小和对齐方式也可能
+不同。因此，在使用 reinterpret_cast 进行类型转换时，需要非常小心，并且需要确保
+转换是安全的。
+```
 ### const_cast
 ```cpp
 常量指针转换成非常量指针，并且仍然指向原来的对象，常量引用被转换成非常量引用，
 并且仍然指向原来的对象，去掉类型的const或volatile
 ```
 
-## 12.赋值表达式中的各种类型
+## 赋值表达式中的各种类型
 
 ### lvalue
 ```cpp
 出现在赋值表达式的左侧,包括变量名、const 变量、数组元素、返回左值引用的函
 数调用、bit-field、union和class member。
+可以取地址的，有名字的，非临时的就是左值
+左值引用要求右边的值必须能够取地址，如果无法取地址，可以用常引用
 ```
 
 ### xvalue
@@ -1386,13 +1539,14 @@ lvalue或xvalue.
 ### rvalue
 ```cpp
 出现在赋值表达式右侧，一个临时对象或其子对象，或者一个与对象无关的值。
+不能取地址的，没有名字的，临时的就是右值
 ```
 ### prvalue 
 ```cpp
 纯右值，不是 xvalue 的右值，没有程序可以访问的地址，包括文字、返回非引用类型的
 函数调用，以及在表达式求值期间创建但只能由编译器访问的临时对象。
 ```
-## 13.reference
+## reference
 ```Cpp
 
 使用reference传递参数，传递者无需知道接收者是以reference形式接受
@@ -1438,7 +1592,7 @@ function( t);	//使用value作为参数传递，不报错
 参数是否以reference的形式实现传递
 ```
 
-## 14.内存
+## 内存
 ```cpp
 Text section: 包含要由处理器执行的二进制指令的部分
 Data section: 包含非零初始化静态数据
