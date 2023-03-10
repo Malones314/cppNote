@@ -905,6 +905,8 @@ std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //1
 ```
 ```cpp
 循环引用造成的内存泄漏
+假设有两个类 A 和 B，它们分别拥有一个指向对方的 shared_ptr。这种情况下，当 A 和 B 的实例都不再
+被使用时，它们仍然无法被释放，因为它们互相持有对方的 shared_ptr，导致引用计数无法降为零。
 struct A;
 struct B{
     shared_ptr<A> a_;
