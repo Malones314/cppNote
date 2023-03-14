@@ -56,6 +56,7 @@ eg: 唤起base classes、non-static members的ctors和dtors
 
 如果class中有pointer则要写big-three/big-Five, 如果没有则一般不需要写
 
+类中如果没有任何参数，占用的内存空间是0，但是sizeof显示的是1
 ```
 
 ## 拷贝赋值的重载
