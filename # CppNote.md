@@ -4,8 +4,7 @@
 ctor: 构造函数
 dtor: 析构函数
 
-explict: 常用于构造函数前, 说明该构造函数只能
-显式调用, 让该构造函数不能隐式调用和复制初始化。
+explict: 常用于构造函数前, 说明该构造函数只能显式调用, 让该构造函数不能隐式调用和复制初始化。
 
 public: 只有当前类能访问
 protected: 只有当前类和子类能访问
@@ -15,12 +14,10 @@ classname(): 临时对象
 
 类中能加const则要加const
 
-当成员函数的 const 版本和 non-const 版本同时存在时,
-const 对象只能调用 const 函数
-non-const 对象只能调用non-const 函数
+当成员函数的 const 版本和 non-const 版本同时存在时,const 对象只能调用 const 函数，non-const
+对象只能调用non-const 函数
 
-const 成员函数可以被 const 对象和non-const 对象调用
-non-const 成员函数只能被non-const 对象调用
+const 成员函数可以被 const 对象和non-const 对象调用non-const成员函数只能被non-const对象调用
 
 
 类的构造函数要使用初始化列表
@@ -30,8 +27,7 @@ classname( classname& a): 拷贝构造函数
 classname& operator=( classname& a):重载赋值操作符
 这两个函数和析构函数被称为Big Three
 
-如果类中有指针，默认的拷贝构造函数是浅拷贝，
-会造成内存泄露和指针指向同一位置
+如果类中有指针，默认的拷贝构造函数是浅拷贝，会造成内存泄露和指针指向同一位置
 
 classname c1;
 c1.memberFunction();	
@@ -40,15 +36,13 @@ c1.memberFunction();
 
 static成员函数没有this指针, 只能处理static数据
 
-调用static函数可以用object调用, 
-也可以通过classname调用
+调用static函数可以用object调用, 也可以通过classname调用
 
-static数据要在类外做一次定义(给不给初值都可以),
-类内只是声明
+static数据要在类外做一次定义(给不给初值都可以),类内只是声明
 
-empty class 在经过编译器编译后就不是empty了, 有
-一个copy ctor、一个copy assignment operator、一个dtor
-所有这些function都是public且inline
+empty class 在经过编译器编译后就不是empty了, 有一个copy ctor、一个copy assignment operator、
+一个dtor所有这些function都是public且inline
+
 default ctor 和 dtor 主要给编译器一个地方存放‘藏身幕后’的code, 
 eg: 唤起base classes、non-static members的ctors和dtors
 
@@ -56,7 +50,7 @@ eg: 唤起base classes、non-static members的ctors和dtors
 
 如果class中有pointer则要写big-three/big-Five, 如果没有则一般不需要写
 
-类中如果没有任何参数，占用的内存空间是0，但是sizeof显示的是1
+类中如果没有任何参数，占用的内存空间是0，但是sizeof显示的是1, 如果有虚函数sizeof是4(虚表指针)
 ```
 
 ## 拷贝赋值的重载
