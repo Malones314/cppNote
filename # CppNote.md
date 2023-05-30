@@ -1078,6 +1078,11 @@ swap( upi, spi);
 std::cout << "upi:" << upi.get() << std::endl;	//upi:0x1d1658
 std::cout << "spi:" << spi.get() << std::endl;	//spi:0x1d1668
 ```
+创建unique_ptr的方式有两种：
+1. ```std::unique_ptr<int> upi(new int);```
+2. ```auto upi = std::make_unique<int>();```
+
+这两种方式都可以创建一个指向某个类型的unique_ptr，但是使用std::make_unique函数可以更加方便和安全，因为它可以自动为unique_ptr分配内存空间，并且可以避免手动分配内存空间时可能出现的内存泄漏等问题 
 # 杂记
 ```Cpp
 heap，或叫system heap, 是操作系统提供的一块global内存空间，程序可
