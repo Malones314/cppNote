@@ -1007,7 +1007,7 @@ cout << wp->a << endl;   // error
 ## unique_ptr
 ```cpp
 own their pointer uniquely独占式的智能指针
-可以安全替代原始指针
+可以安全替代原始指针，只会在对象析构的时候释放一次
 
 当std::unique_ptr被销毁时，它所管理的对象也会被自动释放。
 
@@ -1045,6 +1045,29 @@ std::unique_ptr<int> bar;
 foo = std::unique_ptr<int>(new int (101));  // rvalue
 bar = std::move(foo); // using std::move, foo已经失效，以后不能使用foo
  //bar = foo; //error unique_ptr不允许赋值操作不能放在等号的左边(函数的参数和返回值例外)
+```
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+	// 创建一个 unique_ptr 来管理动态分配的整数数组
+	std::unique_ptr<int[]> arrPtr(new int[5]);
+
+	// 初始化数组元素
+	for (int i = 0; i < 5; ++i) {
+			arrPtr[i] = i * 2;
+	}
+
+	// 使用智能指针访问和修改数组元素
+	for (int i = 0; i < 5; ++i) {
+			std::cout << "arrPtr[" << i << "] = " << arrPtr[i] << std::endl;
+	}
+
+	// 不需要手动释放内存，当 unique_ptr 超出作用域时，它会自动释放所管理的内存
+
+	return 0;
+}
 ```
 ```cpp
 auto spi = make_unique<int>(10);
