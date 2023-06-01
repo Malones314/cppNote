@@ -884,6 +884,9 @@ creat、delete、reset一个shared_ptr时,更新计数器，检测是否是第�
 
 对于可能大量复制赋值的对象，因为shared_ptr让同一块内存被多个引用，而非复制内存
 到另一块内存。
+
+shared_ptr引用计数本身是安全无锁的，但是对象的读写不是， 因为shared_ptr有两个数据
+成员，读写操作不能简单的原子化。
 ```
 ```cpp
 std::shared_ptr的示例
@@ -939,17 +942,20 @@ weak_ptr 通过不持有对象的强引用，而是持有一个“弱引用”�
 问所指向对象时，我们可以通过 weak_ptr 获得一个 shared_ptr 对象，然后使用该对象进
 行操作。如果所指向的对象已被释放，则该操作将不起作用，因为 weak_ptr 指向的对象已不
 存在。
+
+lock() 成员函数的含义是将 weak_ptr 对象转换为一个 shared_ptr 对象，如果 weak_ptr 
+所指向的对象已经被释放了，则返回一个空的 shared_ptr 对象。
 ```
 ```cpp
 注：
-	1. weak_ptr需要在shared_ptr已经创建的情况下使用，否则会抛出异常。这是因为weak_ptr
-	只是shared_ptr的一种观察者，它不能自己独立管理对象的生命周期。
-	2. 在使用weak_ptr时，我们需要检查它所引用的对象是否存在，可以通过调用weak_ptr的
-	lock()方法获取其所引用的对象的shared_ptr，如果对象已经被销毁，则lock()方法将返回
-	一个空的shared_ptr。
-	3. 在使用weak_ptr时，我们需要注意避免使用过期的对象。当我们通过lock()方法获取
-	shared_ptr时，有可能已经存在其他线程对该对象进行了释放，所以我们需要在获取shared_ptr
-	后立即检查它是否为空，以避免使用过期的对象。
+1. weak_ptr需要在shared_ptr已经创建的情况下使用，否则会抛出异常。这是因为weak_ptr
+只是shared_ptr的一种观察者，它不能自己独立管理对象的生命周期。
+2. 在使用weak_ptr时，我们需要检查它所引用的对象是否存在，可以通过调用weak_ptr的
+lock()方法获取其所引用的对象的shared_ptr，如果对象已经被销毁，则lock()方法将返回
+一个空的shared_ptr。
+3. 在使用weak_ptr时，我们需要注意避免使用过期的对象。当我们通过lock()方法获取
+shared_ptr时，有可能已经存在其他线程对该对象进行了释放，所以我们需要在获取shared_ptr
+后立即检查它是否为空，以避免使用过期的对象。
 ```
 ```cpp
 // 创建一个shared_ptr指向动态分配的int类型内存
