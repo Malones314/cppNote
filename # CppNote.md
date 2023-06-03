@@ -1,64 +1,58 @@
 # 类
-```Cpp
+1. 常用关键字和名称
+1.1 ```ctor```: 构造函数
+1.2 ```dtor```: 析构函数
+1.3 ```explict```: 常用于构造函数前, 说明该构造函数只能显式调用, 让该构造函数不能隐式调用和复制初始化。
+1.4 ```public```: 只有当前类能访问
+1.5 ```protected```: 只有当前类和子类能访问
+1.6 ```public```: 所有类都能访问
+1.7 ```className()```: 临时对象
 
-ctor: 构造函数
-dtor: 析构函数
+2. 类中能加```const```则要加```const```
 
-explict: 常用于构造函数前, 说明该构造函数只能显式调用, 让该构造函数不能隐式调用和复制初始化。
+3. 当成员函数的 ```const``` 版本和 ```non-const``` 版本同时存在时, ```const``` 对象只能调用 ```const``` 函数，```non-const``` 对象只能调用 ```non-const``` 函数
 
-public: 只有当前类能访问
-protected: 只有当前类和子类能访问
-public: 所有类都能访问
+	```const``` 成员函数可以被 ```const``` 对象和 ```non-const``` 对象调用```non-const``` 成员函数只能被 ```non-const``` 对象调用
 
-classname(): 临时对象
+4. 类的构造函数要使用初始化列表
 
-类中能加const则要加const
+5. 如果类中有指针则必须要带有：
+	```className( className& a)```: 拷贝构造函数
+	```className& operator=( className& a)```:重载赋值操作符
+	这两个函数和析构函数被称为Big Three
 
-当成员函数的 const 版本和 non-const 版本同时存在时,const 对象只能调用 const 函数，non-const
-对象只能调用non-const 函数
+6. 如果类中有指针，默认的拷贝构造函数是**浅拷贝**，会造成内存泄露和指针指向同一位置
+7. 
+	```CPP
+	classname c1;
+	c1.memberFunction();	
+		//等价于：classname::memberFunction( &c1);
+		//c1相当于this指针, 如果函数为static函数则没有这一步
+	```
 
-const 成员函数可以被 const 对象和non-const 对象调用non-const成员函数只能被non-const对象调用
+8. ```static```成员函数没有```this```指针, 只能处理```static```数据
 
+9. 调用```static```函数可以用object调用, 也可以通过classname调用
 
-类的构造函数要使用初始化列表
+	```static```数据要在类外做一次定义(给不给初值都可以),类内只是声明
 
-如果类中有指针则必须要带有：
-classname( classname& a): 拷贝构造函数
-classname& operator=( classname& a):重载赋值操作符
-这两个函数和析构函数被称为Big Three
+10. ```empty class``` 在经过编译器编译后就不是empty了, 有一个```copy ctor```、一个```copy assignment operator```、一个```dtor```, 所有这些function都是```public```且```inline```
 
-如果类中有指针，默认的拷贝构造函数是浅拷贝，会造成内存泄露和指针指向同一位置
+11. ```default ctor``` 和 ```dtor``` 主要给编译器一个地方存放‘藏身幕后’的code, 
+eg: 唤起```base classes```、```non-static members```的```ctors```和```dtors```
 
-classname c1;
-c1.memberFunction();	
-	//等价于：classname::memberFunction( &c1);
-	//c1相当于this指针, 如果函数为static函数则没有这一步
+12. 编译器产生的```dtor```是```non-virtual```, 除非这个```class```的```base class```本身宣告有```virtual dtor```
 
-static成员函数没有this指针, 只能处理static数据
+13. 如果```class```中有```pointer```则要写big-three/big-Five, 如果没有则一般不需要写
 
-调用static函数可以用object调用, 也可以通过classname调用
-
-static数据要在类外做一次定义(给不给初值都可以),类内只是声明
-
-empty class 在经过编译器编译后就不是empty了, 有一个copy ctor、一个copy assignment operator、
-一个dtor所有这些function都是public且inline
-
-default ctor 和 dtor 主要给编译器一个地方存放‘藏身幕后’的code, 
-eg: 唤起base classes、non-static members的ctors和dtors
-
-编译器产生的dtor是non-virtual, 除非这个class的base class本身宣告有virtual dtor
-
-如果class中有pointer则要写big-three/big-Five, 如果没有则一般不需要写
-
-类中如果没有任何参数，占用的内存空间是0，但是sizeof显示的是1, 如果有虚函数sizeof是4(虚表指针)
-```
+14. 类中如果没有任何参数，占用的内存空间是0，但是```sizeof```显示的是1, 如果有虚函数```sizeof```是4(虚表指针)
 
 ## 拷贝赋值的重载
-```Cpp
+
 需要检测自我赋值, 好处：
 	1.速度快, 效率高, 防止不必要的动作
 	2.防止a = a的出错, 下例的高亮行如果没有自我赋值检测, 则a = a会出错
-```
+
 ```cpp{.line-numbers highlight=5-7}		
 
 classname& operator=( classname& a){	//因为可能连续赋值, 所以返回类型不能为void
@@ -70,44 +64,43 @@ classname& operator=( classname& a){	//因为可能连续赋值, 所以返回类
 	Copy( this->data, a->data);			
 	return *this;
 }
-```
+
+ ```
 ## new / delete
+```new``` 表示在堆上分配内存的请求，如果有足够的可用内存，```new``` 运算符会初始化内存，并将新分配和初始化的内存的地址返回给指针变量。
+当使用```new```运算符来创造类对象时，对象的内存是使用堆中的 ```operator new``` 分配的。然后调用对应的```ctor```
+
+```operator new``` 是一个分配原始内存的函数，```operator new``` **可以重载**，它不初始化内存，
+即不调用构造函数。但是，在我们重载的 ```new``` 返回后，编译器也会在适用时自动调用构造函数。也可以全局或为特定类重载 ```operator new```。
+
+```new``` 和 ```operator new``` 的主要区别在于：
+1. ```new``` 是 C++ 中的**关键字**，```operator new``` 是**全局函数**。
+2. ```new``` 运算符使用 ```operator new``` 函数分配内存，返回指向新内存块的指针，并调用构造函数初始化对象，而 ```operator new``` 函数只是分配内存并返回指针，不进行构造函数的初始化。
+3. ```operator new``` 函数可以被重载以实现自定义的内存分配方式。
+
+```new```时先分配memory, 再调用构造函数
+```delete```时先调用析构函数, 再释放memory
+
+如果```new```了带有指针的类的数组, ```delete```时没有[], 则只会唤起一次```dtor```，使用[]后编译器会知道要调用多少次```dtor```(在cookie后4字节会说明需要调用多少次)
+但如果类中不带指针, 则```delete```时不使用[]也不会造成内存泄露(为了一致性, 建议也写[])
+
+```new``` 和 ```delete``` 无法重载, ```new``` 和 ```delete``` 被分解成三个动作, 其中```operator new``` 和 ```operator delete``` 可以重载，还可以重载多种类型的 ```new()```、```delete()```, 但是不同版本要有独一无二的参数列表,
+其中的第一参数必须为 ```size_t```
 ```cpp
-new 表示在堆上分配内存的请求，如果有足够的可用内存，new 运算符会初始化内存
-并将新分配和初始化的内存的地址返回给指针变量。
-当使用new运算符来创造类对象时，对象的内存是使用堆中的 operator new 分配的。然后
-调用对应的ctor
-```
-```cpp
-operator new 是一个分配原始内存的函数，operator new 可以重载，它不初始化内存，
-即不调用构造函数。但是，在我们重载的 new 返回后，编译器也会在适用时自动调用构造
-函数。也可以全局或为特定类重载 operator new。
+new 被分解为：
 
-```
-```Cpp
-new时先分配memory, 再调用构造函数
-delete时先调用析构函数, 再释放memory
-
-如果new了带有指针的类的数组, delete时没有[], 则只会唤起一次dtor
-使用[]后编译器会知道要调用多少次dtor(在cookie后4字节会说明需要调用多少次)
-但如果类中不带指针, 则delete时不使用[]也不会造成内存泄露(为了一致性, 建议也写[])
-
-new 和 delete 无法重载, new 和 delete 被分解成三个动作, 其中
-operator new 和 operator delete 可以重载
-还可以重载多种类型的 new()、delete(), 但是不同版本要有独一无二的参数列表,
-其中的第一参数必须为 size_t
-```
-```Cpp
-new 被分解为
 void* mem = operator new ( sizeof( Type));
 p = static_cast<Type*>( mem);
 p->Type::Tyoe();
-delete 被分解为
+
+delete 被分解为：
+
 p->~Type();
 operator delete( p);
-```
+ ```
 ```cpp
-operator new 重载
+operator new 重载：
+
 void* myAlloc( size_t size){
 	return malloc( size);
 }
@@ -119,8 +112,11 @@ inline void* operator new[]( size_t size){
 	.....
 	return myAlloc( size);
 }
+ ```
 
-operator delete 重载
+```cpp
+operator delete 重载:
+
 void myFree( void* ptr){
 	return free( ptr);
 }
@@ -135,62 +131,55 @@ inline void operator delete( void* ptr){
 
 Type* a = ::new Type;	//强制调用global operator new
 ::delete a;		//强制调用global operator delete
-
-```
+ ```
 ## 多态
-```cpp
-C++中的多态性有两种形式：
-静态多态性（Static Polymorphism）和动态多态性（Dynamic Polymorphism）。
 
-静态多态性是通过C++的函数重载（Function Overloading）和运算符重载（Operator 
-Overloading）实现的。在编译时，编译器会根据参数类型或运算符的操作数类型来决定使
+C++中的多态性有两种形式：
+
+1. 静态多态性（Static Polymorphism）是通过C++的函数重载（Function Overloading）和运算符重载（Operator Overloading）实现的。在编译时，编译器会根据参数类型或运算符的操作数类型来决定使
 用哪个函数或运算符重载。
 
-动态多态性是通过C++的虚函数（Virtual Function）实现的。虚函数允许派生类重写基
+2. 动态多态性（Dynamic Polymorphism）是通过C++的虚函数（Virtual Function）实现的。虚函数允许派生类重写基
 类的函数，当通过基类指针或引用调用虚函数时，实际调用的是派生类的函数。
-```
+
 ### 抽象类
-```cpp
+
 当您尝试创建抽象类的实例时，会出现错误。抽象类是至少有一个纯虚函数的类，这意味着
 它不能被直接实例化。要修复此错误，需要创建一个继承自抽象类的具体类的实例
-```
-## 继承(inheritance): A is-a B (A是一种B)
-```Cpp
 
-父类(base)数据可以被子类(derived)完全继承
+### 继承(inheritance): A is-a B (A是一种B
+
+1. 父类(base)数据可以被子类(derived)完全继承
 函数的继承是继承调用权(子类能调用父类的函数)
 
-可以通过子类对象调用父类函数。
+2. 可以通过子类对象调用父类函数。
 
-子类若重写了父类的虚函数则通过子类调用的是子类重写的虚函数
+3. 子类若重写了父类的虚函数则通过子类调用的是子类重写的虚函数
 
-Template Method:
+4. Template Method:
 	写好框架, 让子类具体实现函数
 
-base的析构函数必须是virtual, 否则出现
-undefined behavior
+5. base的析构函数必须是```virtual```, 否则出现undefined behavior
 
-构造由内而外
-	derived的构造函数首先调用base的default
-	构造函数，然后再执行自己。
-析构由外而内
-	derived的析构函数首先执行自己，然后再调用
-	base的析构函数
+6. 构造由内而外
+	derived的ctor首先调用base的default ctor，然后再执行自己。
+7. 析构由外而内
+	derived的dtor首先执行自己，然后再调用base的dtor
 
-```
-```Cpp{.line-numbers}
+8.
+	```Cpp{.line-numbers}
 
-struct _List_node_base{
-	_List_node_base* _M_next;
-	_List_node_base* _M_prev;
-};
-template<typename _Tp>
-struct _List_node 
-	: public _List_node_base{
-		_Tp _M_data;
-};
-```
-```Cpp
+	struct _List_node_base{
+		_List_node_base* _M_next;
+		_List_node_base* _M_prev;
+	};
+	template<typename _Tp>
+	struct _List_node 
+		: public _List_node_base{
+			_Tp _M_data;
+	};
+	```
+
 non-virtual function
 	不希望derived class重新定义(override)它
 virtual function
@@ -868,7 +857,7 @@ shared_ptr<T> lock() const noexcept
 获取共享资源所有权的 shared_ptr
 如果原始指针已过期，则成员函数返回一个空的 shared_ptr 对象；否则它返回一个拥有
 原始指针指向的资源的 shared_ptr<T> 对象。
-```
+ ```
 
 ## shared_ptr
 ```cpp
@@ -885,20 +874,32 @@ creat、delete、reset一个shared_ptr时,更新计数器，检测是否是第�
 对于可能大量复制赋值的对象，因为shared_ptr让同一块内存被多个引用，而非复制内存
 到另一块内存。
 
-shared_ptr引用计数本身是安全无锁的，但是对象的读写不是， 因为shared_ptr有两个数据
-成员，读写操作不能简单的原子化。
+shared_ptr引用计数本身是安全无锁的，但是对象的读写不是， 因为shared_ptr有两个数据成员，读写操作不能简单的原子化。
+
+可能因为遗漏了一个拷贝，造成意外延长对象的生命周期。
 ```
 ```cpp
 std::shared_ptr的示例
 
-std::shared_ptr<int> ptr1(new int(10)); //创建一个智能指针ptr1
-std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //1
-{
-    std::shared_ptr<int> ptr2 = ptr1; //创建另一个智能指针ptr2并指向ptr1所指向的内存
-    std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //2
-    std::cout << "ptr2的引用计数：" << ptr2.use_count() << std::endl; //2
-} //ptr2的生命周期结束，所管理的内存块引用计数减1
-std::cout << "ptr1的引用计数：" << ptr1.use_count() << std::endl; //1
+#include <iostream>
+#include <memory>
+
+int main() {
+    std::shared_ptr<int> p1 = std::make_shared<int>(10);	//C++14及以后
+    std::shared_ptr<int> p2 = p1; // 创建一个新的 shared_ptr 对象 p2，与 p1 共享所管理的对象
+
+    std::cout << "p1.use_count() = " << p1.use_count() << std::endl; // 输出 p1 对象当前的引用计数
+    std::cout << "p2.use_count() = " << p2.use_count() << std::endl; // 输出 p2 对象当前的引用计数
+
+    p1.reset(); // p1 释放其所管理的对象，引用计数减 1
+    std::cout << "p1.use_count() = " << p1.use_count() << std::endl; // 输出 p1 对象当前的引用计数
+    std::cout << "p2.use_count() = " << p2.use_count() << std::endl; // 输出 p2 对象当前的引用计数
+
+    p2.reset(); // p2 释放其所管理的对象，这时引用计数为 0，对象被销毁
+    std::cout << "p2.use_count() = " << p2.use_count() << std::endl; // 输出 p2 对象当前的引用计数
+
+    return 0;
+}
 
 ```
 ```cpp
