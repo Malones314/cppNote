@@ -1730,6 +1730,28 @@ constexpr int d = square(c); // 因为 c 不是常量表达式，所以在运行
 
 ```
 a 是一个常量表达式，因此在编译期调用了 square 函数，并将 25 赋值给 b。而 c 不是常量表达式，因此在运行期将调用 square 函数来计算 100 并赋值给 d。
+
+### const_cast
+const_cast 是C++中的一个类型转换操作符，用于将const修饰的对象转换为非const类型。在C++中，const关键字用于声明对象为只读，即不允许修改其值。但有时候我们可能需要对一个const对象进行修改，这时就可以使用const_cast来去除const属性。
+常用于指针和引用。
+```cpp
+#include <iostream>
+int main() {
+	const int number = 10;
+	const int* constPtr = &number;  // 指向常量的指针
+
+	// 使用 const_cast 移除 const 属性
+	int* nonConstPtr = const_cast<int*>(constPtr);
+
+	// 修改对象的值
+	*nonConstPtr = 20;
+
+	// 打印修改后的值
+	std::cout << "Modified number: " << number << std::endl;
+
+	return 0;
+}
+```
 ## enum
 
 1. 常规枚举
